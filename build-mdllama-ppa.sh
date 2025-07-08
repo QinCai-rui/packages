@@ -5,7 +5,7 @@ set -e
 sudo apt-get update
 sudo apt-get install -y devscripts debhelper dpkg-dev fakeroot python3-stdeb python3-all python3-requests python3-rich
 # ollama is not in official repos, so install via pip for build only
-pip3 install ollama
+pip3 install ollama --break-system-packages
 
 # 2. Clone mdllama source
 git clone https://github.com/QinCai-rui/mdllama.git
