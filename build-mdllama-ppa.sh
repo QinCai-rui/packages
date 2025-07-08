@@ -28,11 +28,32 @@ find mdllama/src -name '*.deb' -exec cp {} . \;
 # 5. Prepare APT repo structure
 rm -rf repo
 mkdir -p repo/pool/main/m/mdllama
+# Ensure both binary-all and binary-arm64 are present and populated for arm64 users
 mkdir -p repo/dists/stable/main/binary-all
+mkdir -p repo/dists/stable/main/binary-arm64
 cp ./*.deb repo/pool/main/m/mdllama/
+
+# Generate Packages.gz for both arch dirs (copy if package arch is all)
 cd repo
-dpkg-scanpackages pool /dev/null | gzip -9c > dists/stable/main/binary-all/Packages.gz
-apt-ftparchive release dists/stable > dists/stable/Release
+dpkg-scanpackages pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
+cp dists/stable/main/binary-all/Packages dists/stable/main/binary-arm64/Packages
+cp dists/stable/main/binary-all/Packages.gz dists/stable/main/binary-arm64/Packages.gz
+
+# Generate Release file with required metadata
+cat > apt-ftparchive.conf <<EOF
+APT::FTPArchive::Release {
+  Origin "QinCai-rui";
+  Label "QinCai-rui";
+  Suite "stable";
+  Codename "stable";
+  Architectures "all arm64";
+  Components "main";
+  Description "QinCai-rui custom PPA";
+};
+EOF
+
+apt-ftparchive -c=apt-ftparchive.conf release dists/stable > dists/stable/Release
+
 cd ..
 
 rm -rf mdllama
