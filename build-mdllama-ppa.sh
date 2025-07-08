@@ -81,6 +81,25 @@ EOF
 
 apt-ftparchive -c=apt-ftparchive.conf release dists/stable > dists/stable/Release
 
+# -- ADDED: Create compressed empty translation and contents files in the correct i18n locations --
+
+for arch in all amd64 arm64 armhf i386; do
+    mkdir -p repo/dists/stable/main/i18n
+    echo | bzip2 > repo/dists/stable/main/i18n/Translation-en.bz2
+    echo | bzip2 > repo/dists/stable/main/i18n/Translation-en_GB.bz2
+    # Contents files (compressed, empty, at dists/stable/main/)
+    echo | gzip > repo/dists/stable/main/Contents-${arch}.gz
+done
+
+# Also create Contents-all.gz
+echo | gzip > repo/dists/stable/main/Contents-all.gz
+
+# Create top-level Contents files for apt compatibility
+for arch in all amd64 arm64 armhf i386; do
+    echo | gzip > repo/dists/stable/Contents-${arch}.gz
+done
+echo | gzip > repo/dists/stable/Contents-all.gz
+
 cd ..
 
 rm -rf mdllama
