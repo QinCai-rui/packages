@@ -34,11 +34,32 @@ cp ./*.deb repo/pool/main/m/mdllama/
 cd repo
 dpkg-scanpackages pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
 
-# Symlink binary-all to other common archs to avoid apt warnings
+# --- Instead of symlinks, COPY binary-all to all common archs for GitHub Pages compatibility ---
 cd dists/stable/main
 for arch in binary-amd64 binary-arm64 binary-i386 binary-armhf; do
-    ln -sfn binary-all "$arch"
+    rm -rf "$arch"
+    cp -r binary-all "$arch"
 done
+
+# Generate empty files to silence apt "Ign" and speed up user experience
+for arch in all amd64 arm64 armhf i386; do
+    mkdir -p binary-$arch
+    touch binary-$arch/Translation-en
+    touch binary-$arch/Translation-en_GB
+    touch binary-$arch/Contents-$arch
+    touch binary-$arch/Contents-all
+    touch binary-$arch/Components
+done
+touch "Icons (48x48)"
+touch "Icons (64x64)"
+touch "Icons (64x64@2)"
+touch "Icons (128x128)"
+touch ../Contents-all
+touch ../Contents-amd64
+touch ../Contents-arm64
+touch ../Contents-armhf
+touch ../Contents-i386
+
 cd ../../../../
 
 # Ensure file/folder exists to avoid "No such file or directory" error
