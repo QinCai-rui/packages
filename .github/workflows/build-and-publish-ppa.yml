@@ -33,3 +33,4 @@ jobs:
           publish_dir: ./repo
           publish_branch: gh-pages
           force_orphan: true
+          cname: packages.qincai.xyz
