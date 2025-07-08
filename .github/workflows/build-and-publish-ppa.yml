@@ -1,0 +1,24 @@
+name: Build and Publish mdllama DEB to GitHub Pages PPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Run build-mdllama-ppa.sh
+        run: |
+          chmod +x ./build-mdllama-ppa.sh
+          ./build-mdllama-ppa.sh
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./repo
+          publish_branch: gh-pages
+          force_orphan: true
