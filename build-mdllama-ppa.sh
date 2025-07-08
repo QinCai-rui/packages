@@ -40,34 +40,11 @@ for arch in binary-amd64 binary-arm64 binary-i386 binary-armhf; do
     rm -rf "$arch"
     cp -r binary-all "$arch"
 done
-
-# Generate empty files to silence apt "Ign" and speed up user experience
-for arch in all amd64 arm64 armhf i386; do
-    mkdir -p binary-$arch
-    touch binary-$arch/Translation-en
-    touch binary-$arch/Translation-en_GB
-    touch binary-$arch/Contents-$arch
-    touch binary-$arch/Contents-all
-    touch binary-$arch/Components
-done
-touch "Icons (48x48)"
-touch "Icons (64x64)"
-touch "Icons (64x64@2)"
-touch "Icons (128x128)"
-touch ../Contents-all
-touch ../Contents-amd64
-touch ../Contents-arm64
-touch ../Contents-armhf
-touch ../Contents-i386
-
 cd ../../../../
 
-# Ensure file/folder exists to avoid "No such file or directory" error
-mkdir -p dists/stable
-touch dists/stable/Release
-
 # Generate Release file with required metadata
-cat > apt-ftparchive.conf <<EOF
+mkdir -p repo/dists/stable
+cat > repo/apt-ftparchive.conf <<EOF
 APT::FTPArchive::Release {
   Origin "Raymont Qin";
   Label "Raymont Qin";
@@ -79,29 +56,27 @@ APT::FTPArchive::Release {
 };
 EOF
 
+cd repo
 apt-ftparchive -c=apt-ftparchive.conf release dists/stable > dists/stable/Release
 
-# -- ADDED: Create compressed empty translation and contents files in the correct i18n locations --
+# === FIX: Generate empty compressed translation and contents files in correct locations ===
 
+# Translation files (.bz2), only need one copy each
+mkdir -p dists/stable/main/i18n
+echo | bzip2 > dists/stable/main/i18n/Translation-en.bz2
+echo | bzip2 > dists/stable/main/i18n/Translation-en_GB.bz2
+
+# Contents files (.gz), one per arch and for "all"
 for arch in all amd64 arm64 armhf i386; do
-    mkdir -p repo/dists/stable/main/i18n
-    echo | bzip2 > repo/dists/stable/main/i18n/Translation-en.bz2
-    echo | bzip2 > repo/dists/stable/main/i18n/Translation-en_GB.bz2
-    # Contents files (compressed, empty, at dists/stable/main/)
-    echo | gzip > repo/dists/stable/main/Contents-${arch}.gz
+    echo | gzip > dists/stable/main/Contents-${arch}.gz
 done
 
-# Also create Contents-all.gz
-echo | gzip > repo/dists/stable/main/Contents-all.gz
-
-# Create top-level Contents files for apt compatibility
-for arch in all amd64 arm64 armhf i386; do
-    echo | gzip > repo/dists/stable/Contents-${arch}.gz
-done
-echo | gzip > repo/dists/stable/Contents-all.gz
+# Remove any uncompressed or wrongly placed Contents/Translation files
+find . -type f \( -name "Contents-*" ! -name "*.gz" -o -name "Translation-en" -o -name "Translation-en_GB" \) -delete
 
 cd ..
 
+# Clean up
 rm -rf mdllama
 
 echo "Done! The repo is in ./repo. Deploy it to your gh-pages branch for PPA hosting."
