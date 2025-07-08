@@ -41,6 +41,9 @@ for arch in binary-amd64 binary-arm64 binary-i386 binary-armhf; do
 done
 cd ../../../../
 
+# Ensure dists/stable exists to avoid "No such file or directory" error
+mkdir -p dists/stable
+
 # Generate Release file with required metadata
 cat > apt-ftparchive.conf <<EOF
 APT::FTPArchive::Release {
