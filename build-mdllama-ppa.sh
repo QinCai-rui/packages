@@ -28,27 +28,29 @@ find mdllama/src -name '*.deb' -exec cp {} . \;
 # 5. Prepare APT repo structure
 rm -rf repo
 mkdir -p repo/pool/main/m/mdllama
-# Ensure both binary-all and binary-arm64 are present and populated for arm64 users
 mkdir -p repo/dists/stable/main/binary-all
-mkdir -p repo/dists/stable/main/binary-arm64
 cp ./*.deb repo/pool/main/m/mdllama/
 
-# Generate Packages.gz for both arch dirs (copy if package arch is all)
 cd repo
 dpkg-scanpackages pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
-cp dists/stable/main/binary-all/Packages dists/stable/main/binary-arm64/Packages
-cp dists/stable/main/binary-all/Packages.gz dists/stable/main/binary-arm64/Packages.gz
+
+# Symlink binary-all to other common archs to avoid apt warnings
+cd dists/stable/main
+for arch in binary-amd64 binary-arm64 binary-i386 binary-armhf; do
+    ln -sfn binary-all "$arch"
+done
+cd ../../../../
 
 # Generate Release file with required metadata
 cat > apt-ftparchive.conf <<EOF
 APT::FTPArchive::Release {
-  Origin "QinCai-rui";
-  Label "QinCai-rui";
+  Origin "Raymont Qin";
+  Label "Raymont Qin";
   Suite "stable";
   Codename "stable";
-  Architectures "all arm64";
+  Architectures "all amd64 arm64 i386 armhf";
   Components "main";
-  Description "QinCai-rui custom PPA";
+  Description "Raymont's custom PPA";
 };
 EOF
 
