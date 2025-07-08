@@ -3,7 +3,8 @@ set -e
 
 # 1. Install build dependencies
 sudo apt-get update
-sudo apt-get install -y devscripts debhelper dpkg-dev fakeroot python3-stdeb python3-all python3-requests python3-rich
+sudo apt-get install -y devscripts debhelper dpkg-dev fakeroot python3-stdeb python3-all python3-requests python3-rich dh-python
+
 # ollama is not in official repos, so install via pip for build only
 pip3 install ollama --break-system-packages
 
@@ -33,5 +34,7 @@ cd repo
 dpkg-scanpackages pool /dev/null | gzip -9c > dists/stable/main/binary-all/Packages.gz
 apt-ftparchive release dists/stable > dists/stable/Release
 cd ..
+
+rm -rf mdllama
 
 echo "Done! The repo is in ./repo. Deploy it to your gh-pages branch for PPA hosting."
