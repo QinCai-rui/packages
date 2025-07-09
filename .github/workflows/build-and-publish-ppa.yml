@@ -16,6 +16,8 @@ permissions:
 jobs:
   build-deb:
     runs-on: Debian
+    outputs:
+      deb-artifact: ${{ steps.upload-deb.outputs.artifact-path }}
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
@@ -25,17 +27,17 @@ jobs:
           chmod +x ./build-mdllama-deb.sh
           ./build-mdllama-deb.sh
 
-      - name: Deploy to gh-pages (debian/)
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload debian repo artifact
+        uses: actions/upload-artifact@v4
+        id: upload-deb
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./repo
-          publish_branch: gh-pages
-          destination_dir: debian
-          cname: packages.qincai.xyz
+          name: debian-repo
+          path: repo/
 
   build-rpm:
     runs-on: Fedora
+    outputs:
+      rpm-artifact: ${{ steps.upload-rpm.outputs.artifact-path }}
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
@@ -45,11 +47,36 @@ jobs:
           chmod +x ./build-mdllama-rpm.sh
           ./build-mdllama-rpm.sh
 
-      - name: Deploy to gh-pages (fedora/)
+      - name: Upload fedora rpm artifact
+        uses: actions/upload-artifact@v4
+        id: upload-rpm
+        with:
+          name: fedora-rpm
+          path: '*.rpm'
+
+  deploy:
+    runs-on: Debian
+    needs: [build-deb, build-rpm]
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Download debian repo artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-repo
+          path: debian/
+
+      - name: Download fedora rpm artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fedora-rpm
+          path: fedora/
+
+      - name: Deploy to gh-pages (debian/ and fedora/)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
           publish_branch: gh-pages
-          destination_dir: fedora
           cname: packages.qincai.xyz
