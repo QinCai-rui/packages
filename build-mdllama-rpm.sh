@@ -23,7 +23,7 @@ cd mdllama/src
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
 rm -rf pkgroot
-python3 setup.py install --root "$PWD/pkgroot" --no-deps
+python3 setup.py install --root "$PWD/pkgroot"
 
 fpm -s dir -t rpm \
     -n mdllama \
