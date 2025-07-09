@@ -10,22 +10,25 @@ gem install --no-document fpm
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
-# 3. Build RPM package with fpm
+# 3. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
-fpm -s python -t rpm \
-    --python-bin python3 \
-    --name mdllama \
-    --version "$tool_version" \
+python3 setup.py bdist_wheel
+rm -rf pkgroot
+pip3 install --prefix "$PWD/pkgroot" dist/*.whl
+
+fpm -s dir -t rpm \
+    -n mdllama \
+    -v "$tool_version" \
+    --architecture noarch \
     --depends python3 \
     --depends python3-requests \
     --depends python3-rich \
     --no-auto-depends \
-    --architecture noarch \
     --description "A command-line interface for Ollama API" \
     --maintainer "Raymont Qin <hello@qincai.xyz>" \
     --url "https://github.com/QinCai-rui/mdllama" \
-    .
+    -C pkgroot .
 
 # 4. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
