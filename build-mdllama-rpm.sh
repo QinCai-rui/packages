@@ -16,7 +16,7 @@ pip3 install --user ollama
 # 4. Build RPM package with fpm
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
-ffpm -s python -t rpm \
+fpm -s python -t rpm \
     --python-bin python3 \
     --name mdllama \
     --version "$tool_version" \
