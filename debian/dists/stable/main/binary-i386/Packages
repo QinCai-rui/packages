@@ -6,10 +6,10 @@ Maintainer: None <None>
 Installed-Size: 128
 Depends: python3-ollama, python3-requests, python3-rich, python3:any
 Filename: pool/main/m/mdllama/python3-mdllama_2.1.0-1_all.deb
-Size: 25952
-MD5sum: 4bc11eb2f27af481793922063f0b0386
-SHA1: 485ebf9dfcc756d5be84ff91e573c0bd56a37e6a
-SHA256: 0d83c8cdaccc1633484017f3ba1fc3949cdf55705bb224d7cb327da689924710
+Size: 25964
+MD5sum: 45b8ddeace02a2721d38829fc348710f
+SHA1: 174528352b979ce8578a06d23a51fd30a30f1c35
+SHA256: 19a3c6f6fb0e086de467ab0189caa52e6aff8bdc5583b1aa2ae36984f934d72c
 Section: python
 Priority: optional
 Homepage: None
