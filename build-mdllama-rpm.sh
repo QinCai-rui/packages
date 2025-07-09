@@ -22,6 +22,7 @@ fpm -s python -t rpm \
     --depends python3-rich \
     --depends python3-setuptools \
     --depends python3-pkg-resources \
+    --no-auto-depends \
     --architecture noarch \
     --description "A command-line interface for Ollama API" \
     --maintainer "Raymont Qin <hello@qincai.xyz>" \
