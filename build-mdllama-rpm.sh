@@ -26,7 +26,7 @@ rm -rf pkgroot
 python3 setup.py install --root "$PWD/pkgroot"
 
 fpm -s dir -t rpm \
-    -n mdllama \
+    -n python3-mdllama \
     -v "$tool_version" \
     --architecture noarch \
     --depends python3 \
