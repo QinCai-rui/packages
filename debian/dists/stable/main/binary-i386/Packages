@@ -1,0 +1,36 @@
+Package: python3-mdllama
+Source: mdllama
+Version: 1.2.2-1
+Architecture: all
+Maintainer: None <None>
+Installed-Size: 108
+Depends: python3-ollama, python3-requests, python3-rich, python3:any
+Filename: pool/main/m/mdllama/python3-mdllama_1.2.2-1_all.deb
+Size: 23076
+MD5sum: ac3de74cc74c5eed4a1652e5afca41c9
+SHA1: 8001e757c807ef0bfaabf8a42077199a6c49b804
+SHA256: eb48629c8ad9b959469a7b87075537726f0ea9726760ac7077d21e6d38c82351
+Section: python
+Priority: optional
+Homepage: None
+Description: A command-line interface for Ollama API
+ # mdllama
+ .
+ A CLI tool that lets you chat with Ollama models right from your terminal, with built-in Markdown rendering.
+ .
+ mdllama makes it easy to interact with Ollama's AI models directly from your command line, meanwhile providing you with real-time Markdown rendering
+ .
+ ## Features
+ .
+ - Chat with Ollama models from the terminal
+ - Built-in Markdown rendering
+ - Simple installation and removal (see below)
+ .
+ ## Screenshots
+ .
+ ### Chat Interface
+ ![Chat](https://raw.githubusercontent.com/QinCai-rui/mdllama/refs/heads/main/assets/chat.png)
+ .
+ ### Help
+ ![Help](https://raw.githubusercontent.com/QinCai-rui/mdllama/refs/heads/main/assets/help.png)
+
