@@ -79,7 +79,7 @@ jobs:
 
   build-rpm:
     name: Build RPM (${{ matrix.arch }})
-    runs-on: [self-hosted, fedora]
+    runs-on: [ubuntu-latest, fedora]
     strategy:
       matrix:
         arch: [x86_64, aarch64]
