@@ -18,6 +18,7 @@ cat > stdeb.cfg <<EOF
 Suite = stable
 Architecture = all
 Depends = python3, python3-requests, python3-rich
+Recommends = python3-ollama
 EOF
 python3 setup.py --command-packages=stdeb.command bdist_deb
 cd ../..
