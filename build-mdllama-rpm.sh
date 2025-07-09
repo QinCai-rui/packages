@@ -22,9 +22,8 @@ cd mdllama/src
 # 5. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
-python3 setup.py bdist_wheel
 rm -rf pkgroot
-pip3 install --prefix "$PWD/pkgroot" dist/*.whl
+python3 setup.py install --root "$PWD/pkgroot" --no-deps
 
 fpm -s dir -t rpm \
     -n mdllama \
