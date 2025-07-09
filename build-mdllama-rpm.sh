@@ -4,7 +4,7 @@ set -e
 # 1. Install build dependencies (Fedora/CentOS/RHEL)
 sudo dnf install -y \
   python3 python3-pip python3-wheel python3-setuptools \
-  ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools createrepo_c
+  ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools createrepo_c python3-colorama
 
 # For fpm (Effing Package Management)
 gem install --no-document fpm
