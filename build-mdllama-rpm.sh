@@ -2,15 +2,24 @@
 set -e
 
 # 1. Install build dependencies (Fedora/CentOS/RHEL)
-sudo dnf install -y python3 python3-pip python3-wheel python3-setuptools ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools createrepo_c
+sudo dnf install -y \
+  python3 python3-pip python3-wheel python3-setuptools \
+  ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools createrepo_c
+
 # For fpm (Effing Package Management)
 gem install --no-document fpm
 
-# 2. Clone mdllama source
+# 2. Upgrade pip and install Python build dependencies via pip
+python3 -m pip install --upgrade pip setuptools wheel
+
+# 3. Install ollama from PyPI (not available as a system package)
+python3 -m pip install --user ollama
+
+# 4. Clone mdllama source
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
-# 3. Build RPM package with wheel+pip+fpm (fixes entry point)
+# 5. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
 python3 setup.py bdist_wheel
@@ -32,19 +41,19 @@ fpm -s dir -t rpm \
     --url "https://github.com/QinCai-rui/mdllama" \
     -C pkgroot .
 
-# 4. Move the generated .rpm to rpm-out directory for artifact upload
+# 6. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 mkdir -p rpm-out
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 
-# 5. Generate YUM repo metadata
+# 7. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c rpm-out/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
 
-# 6. Clean up
+# 8. Clean up
 rm -rf mdllama
 
 echo "Done! The RPM package and repo metadata are in rpm-out/. You can now distribute or upload it to a Fedora repo."
