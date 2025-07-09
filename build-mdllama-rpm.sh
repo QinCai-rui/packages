@@ -27,7 +27,7 @@ fpm -s dir -t rpm \
     --depends python3-setuptools \
     --depends python3-pkg-resources \
     --no-auto-depends \
-    --description "A command-line interface for Ollama API" \
+    --description "A command-line interface for Ollama and OpenAI-compatible API" \
     --maintainer "Raymont Qin <hello@qincai.xyz>" \
     --url "https://github.com/QinCai-rui/mdllama" \
     -C pkgroot .

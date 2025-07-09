@@ -49,7 +49,7 @@ APT::FTPArchive::Release {
   Codename "stable";
   Architectures "all amd64 arm64 i386 armhf";
   Components "main";
-  Description "Raymont's custom PPA";
+  Description "Raymont's personal PPA";
 };
 EOF
 
