@@ -24,6 +24,8 @@ fpm -s dir -t rpm \
     --depends python3 \
     --depends python3-requests \
     --depends python3-rich \
+    --depends python3-setuptools \
+    --depends python3-pkg-resources \
     --no-auto-depends \
     --description "A command-line interface for Ollama API" \
     --maintainer "Raymont Qin <hello@qincai.xyz>" \
