@@ -1,20 +1,24 @@
 Package: python3-mdllama
 Source: mdllama
-Version: 2.1.1-1
+Version: 2.1.2-1
 Architecture: all
 Maintainer: None <None>
 Installed-Size: 128
 Depends: python3-ollama, python3-requests, python3-rich, python3:any
-Filename: pool/main/m/mdllama/python3-mdllama_2.1.1-1_all.deb
-Size: 25968
-MD5sum: b027a76a25d94b5e84f9c198ece4493a
-SHA1: 2dd64c65a1dcada88f9327b3d419c5bea73ccdd2
-SHA256: 4556160b003351d9affc0f3c4ad5b57c64ee51da05fd5d95d85154d13e865d47
+Filename: pool/main/m/mdllama/python3-mdllama_2.1.2-1_all.deb
+Size: 26176
+MD5sum: 108a8a5be0208c27971eefb636e717ff
+SHA1: b3a46d0b5d9fa2483b7063fa5d8366355c0d3f48
+SHA256: c64995eb6c5d84e20020ac4a5f3d4aed4ba8beaf9e881d84e4f22fdbc0b06f9d
 Section: python
 Priority: optional
 Homepage: None
 Description: A command-line interface for Ollama API
  # mdllama
+ .
+ [![Build and Publish mdllama DEB and RPM](https://github.com/QinCai-rui/packages/actions/workflows/build-and-publish-ppa.yml/badge.svg)](https://github.com/QinCai-rui/packages/actions/workflows/build-and-publish-ppa.yml)
+ .
+ [![PPA development (GH Pages)](https://github.com/QinCai-rui/packages/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)](https://github.com/QinCai-rui/packages/actions/workflows/pages/pages-build-deployment)
  .
  A CLI tool that lets you chat with Ollama models right from your terminal, with built-in Markdown rendering.
  .
@@ -30,7 +34,4 @@ Description: A command-line interface for Ollama API
  .
  ### Chat Interface
  ![Chat](https://raw.githubusercontent.com/QinCai-rui/mdllama/refs/heads/main/assets/chat.png)
- .
- ### Help
- ![Help](https://raw.githubusercontent.com/QinCai-rui/mdllama/refs/heads/main/assets/help.png)
 
