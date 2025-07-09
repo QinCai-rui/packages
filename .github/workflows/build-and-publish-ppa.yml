@@ -21,10 +21,10 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Run build-mdllama-ppa.sh
+      - name: Run build-mdllama-deb.sh
         run: |
-          chmod +x ./build-mdllama-ppa.sh
-          ./build-mdllama-ppa.sh
+          chmod +x ./build-mdllama-deb.sh
+          ./build-mdllama-deb.sh
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
