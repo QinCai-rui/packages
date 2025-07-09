@@ -10,10 +10,7 @@ gem install --no-document fpm
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
-# 3. Install Python dependencies for build only (ollama is not in Fedora repos)
-pip3 install --user ollama
-
-# 4. Build RPM package with fpm
+# 3. Build RPM package with fpm
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
 fpm -s python -t rpm \
@@ -30,19 +27,19 @@ fpm -s python -t rpm \
     --url "https://github.com/QinCai-rui/mdllama" \
     .
 
-# 5. Move the generated .rpm to rpm-out directory for artifact upload
+# 4. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 mkdir -p rpm-out
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 
-# 6. Generate YUM repo metadata
+# 5. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c rpm-out/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
 
-# 7. Clean up
+# 6. Clean up
 rm -rf mdllama
 
 echo "Done! The RPM package and repo metadata are in rpm-out/. You can now distribute or upload it to a Fedora repo."
