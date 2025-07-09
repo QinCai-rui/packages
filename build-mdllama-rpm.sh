@@ -2,7 +2,7 @@
 set -e
 
 # 1. Install build dependencies (Fedora/CentOS/RHEL)
-sudo dnf install -y python3 python3-pip python3-wheel python3-setuptools ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools
+sudo dnf install -y python3 python3-pip python3-wheel python3-setuptools ruby rubygems gcc redhat-rpm-config rpm-build rpmdevtools createrepo_c
 # For fpm (Effing Package Management)
 gem install --no-document fpm
 
@@ -34,7 +34,14 @@ cd ../..
 mkdir -p rpm-out
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 
-# 6. Clean up
+# 6. Generate YUM repo metadata
+if command -v createrepo_c >/dev/null 2>&1; then
+  createrepo_c rpm-out/
+else
+  echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
+fi
+
+# 7. Clean up
 rm -rf mdllama
 
-echo "Done! The RPM package is in the current directory. You can now distribute or upload it to a Fedora repo."
+echo "Done! The RPM package and repo metadata are in rpm-out/. You can now distribute or upload it to a Fedora repo."
