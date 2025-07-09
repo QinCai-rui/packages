@@ -72,10 +72,6 @@ jobs:
         with:
           name: fedora-rpm
           path: fedora/
-      - name: Move RPMs to fedora/
-        run: |
-          mkdir -p fedora
-          find fedora -name '*.rpm' -exec mv -t fedora/ {} +
 
       - name: Deploy to gh-pages (debian/ and fedora/)
         uses: peaceiris/actions-gh-pages@v4
