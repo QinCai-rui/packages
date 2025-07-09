@@ -17,6 +17,9 @@ jobs:
           - arch: arm64
             runner: [self-hosted, ARM64]
     steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -67,7 +70,7 @@ jobs:
           cp ./btop-${{ matrix.arch }} pkgroot/usr/bin/btop
           fpm -s dir -t deb -n btop -v "$version" --architecture ${{ matrix.arch }} \
             --description "Resource monitor that shows usage and stats for processor, memory, disks, network and processes." \
-            --maintainer "Your Name <you@example.com>" \
+            --maintainer "Raymont Qin <hello@qincai.xyz>" \
             -C pkgroot .
           mv *.deb btop-${{ matrix.arch }}.deb
 
@@ -79,11 +82,23 @@ jobs:
 
   build-rpm:
     name: Build RPM (${{ matrix.arch }})
-    runs-on: [ubuntu-latest, fedora]
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        arch: [x86_64, aarch64]
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: fedora
     steps:
+      - name: Install jq
+        run: |
+          if command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y jq curl
+          elif command -v dnf >/dev/null 2>&1; then
+            sudo dnf install -y jq curl
+          fi
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -133,7 +148,7 @@ jobs:
           cp ./btop-${{ matrix.arch }} pkgroot/usr/bin/btop
           fpm -s dir -t rpm -n btop -v "$version" --architecture ${{ matrix.arch }} \
             --description "Resource monitor that shows usage and stats for processor, memory, disks, network and processes." \
-            --maintainer "Your Name <you@example.com>" \
+            --maintainer "Raymont Qin <hello@qincai.xyz>" \
             -C pkgroot .
           mv *.rpm btop-${{ matrix.arch }}.rpm
 
