@@ -29,9 +29,10 @@ fpm -s python -t rpm \
     --url "https://github.com/QinCai-rui/mdllama" \
     .
 
-# 5. Move the generated .rpm to workspace root
+# 5. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
-find mdllama/src -name '*.rpm' -exec cp {} . \;
+mkdir -p rpm-out
+find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 
 # 6. Clean up
 rm -rf mdllama
