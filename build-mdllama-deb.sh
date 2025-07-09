@@ -16,6 +16,8 @@ Suite = stable
 Architecture = all
 Depends = python3, python3-requests, python3-rich
 Ignore-Install-Requires = True
+
+[mdllama]
 Package = mdllama
 EOF
 python3 setup.py --command-packages=stdeb.command bdist_deb
