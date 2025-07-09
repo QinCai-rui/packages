@@ -73,6 +73,11 @@ jobs:
           name: fedora-rpm
           path: fedora/
 
+      - name: Clean up extra files before deploy
+        run: |
+          rm -f LICENSE
+          find . -maxdepth 2 -name '*.sh' -exec rm -f {} +
+
       - name: Deploy to gh-pages (debian/ and fedora/)
         uses: peaceiris/actions-gh-pages@v4
         with:
