@@ -55,7 +55,7 @@ jobs:
           path: rpm-out/
 
   deploy:
-    runs-on: Debian
+    runs-on: ubuntu-latest
     needs: [build-deb, build-rpm]
     steps:
       - name: Checkout this repository
