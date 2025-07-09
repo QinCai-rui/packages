@@ -16,13 +16,14 @@ pip3 install --user ollama
 # 4. Build RPM package with fpm
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
-fpm -s python -t rpm \
+ffpm -s python -t rpm \
     --python-bin python3 \
     --name mdllama \
     --version "$tool_version" \
     --depends python3 \
     --depends python3-requests \
     --depends python3-rich \
+    --exclude-depends python-ollama \
     --no-auto-depends \
     --architecture noarch \
     --description "A command-line interface for Ollama API" \
