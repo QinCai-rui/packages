@@ -1,5 +1,4 @@
-name: Build and Publish mdllama DEB to GitHub Pages PPA
-
+name: Build and Publish mdllama DEB and RPM to GitHub Pages PPA
 
 on:
   workflow_dispatch:
@@ -15,7 +14,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-publish:
+  build-deb:
     runs-on: Debian
     steps:
       - name: Checkout this repository
@@ -26,10 +25,31 @@ jobs:
           chmod +x ./build-mdllama-deb.sh
           ./build-mdllama-deb.sh
 
-      - name: Deploy to gh-pages
+      - name: Deploy to gh-pages (debian/)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./repo
           publish_branch: gh-pages
+          destination_dir: debian
+          cname: packages.qincai.xyz
+
+  build-rpm:
+    runs-on: Fedora
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Run build-mdllama-rpm.sh
+        run: |
+          chmod +x ./build-mdllama-rpm.sh
+          ./build-mdllama-rpm.sh
+
+      - name: Deploy to gh-pages (fedora/)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          destination_dir: fedora
           cname: packages.qincai.xyz
