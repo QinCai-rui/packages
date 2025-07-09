@@ -10,7 +10,7 @@ sudo dnf install -y \
 gem install --no-document fpm
 
 # 2. Upgrade pip and install Python build dependencies via pip
-python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install --upgrade pip wheel
 
 # 3. Install ollama from PyPI (not available as a system package)
 python3 -m pip install --user ollama
