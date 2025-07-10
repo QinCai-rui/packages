@@ -54,5 +54,6 @@ fi
 
 # 8. Clean up
 rm -rf mdllama
+sudo pip uninstall mdllama
 
 echo "Done! The RPM package and repo metadata are in rpm-out/. You can now distribute or upload it to a Fedora repo."
