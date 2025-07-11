@@ -1,15 +1,15 @@
 Package: python3-mdllama
 Source: mdllama
-Version: 2.2.8-1
+Version: 2.3.0-1
 Architecture: all
 Maintainer: None <None>
 Installed-Size: 140
 Depends: python3-colorama, python3-ollama, python3-requests, python3-rich, python3:any
-Filename: pool/main/m/mdllama/python3-mdllama_2.2.8-1_all.deb
-Size: 28192
-MD5sum: 2f6e352d4ae2e731b0f7b4b676e08f9f
-SHA1: 814789e1d250e5a4c8dac0c26d3684b1b2410eb7
-SHA256: d2a9250e04cf49fdc656a9864347740a06e47fd392022e73f90575a4c90037b3
+Filename: pool/main/m/mdllama/python3-mdllama_2.3.0-1_all.deb
+Size: 28340
+MD5sum: 64e50bdc83d844bebdc4e8e61b4aa3ca
+SHA1: d7cb80609c8be9462a708ff0d183c6961314bded
+SHA256: 06e106f622b4fa175271ad0814a14ee044f378ac5e986df9a554eef1a89821f4
 Section: python
 Priority: optional
 Homepage: None
