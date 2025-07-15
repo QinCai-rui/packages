@@ -57,18 +57,19 @@ fpm -s dir -t rpm \
 
 # 7. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
-# Preserve existing packages from backup if they exist
-if [ -d "rpm-out-backup/rpm-out-$timestamp" ]; then
+
+# Restore all previously published RPMs from gh-pages (if available)
+if [ -d ../fedora ]; then
   mkdir -p rpm-out
-  cp rpm-out-backup/rpm-out-$timestamp/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Preserved existing RPM packages from previous repo"
+  cp ../fedora/*.rpm rpm-out/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages fedora/ directory."
 else
   mkdir -p rpm-out
 fi
 
 # Add the new .rpm packages
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
-echo "Added new RPM packages to repo:"
+echo "All RPM packages in repo (old + new):"
 ls -la rpm-out/
 
 # 8. Generate YUM repo metadata

@@ -22,6 +22,11 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
+      - name: Download existing debian repo from gh-pages
+        run: |
+          git fetch origin gh-pages
+          git checkout origin/gh-pages -- debian || true
+
       - name: Run build-mdllama-deb.sh
         run: |
           chmod +x ./build-mdllama-deb.sh
@@ -41,6 +46,11 @@ jobs:
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
+
+      - name: Download existing fedora repo from gh-pages
+        run: |
+          git fetch origin gh-pages
+          git checkout origin/gh-pages -- fedora || true
 
       - name: Run build-mdllama-rpm.sh
         run: |

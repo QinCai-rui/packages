@@ -40,11 +40,11 @@ cd ../..
 find mdllama/src -name '*.deb' -exec cp {} . \;
 
 # 6. Prepare APT repo structure
-# Preserve existing packages from backup if they exist
-if [ -d "repo-backup/repo-$timestamp/pool/main/m/mdllama" ]; then
+# Restore all previously published DEBs from gh-pages (if available)
+if [ -d ../debian/pool/main/m/mdllama ]; then
   mkdir -p repo/pool/main/m/mdllama
-  cp repo-backup/repo-$timestamp/pool/main/m/mdllama/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
-  echo "Preserved existing packages from previous repo"
+  cp ../debian/pool/main/m/mdllama/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
+  echo "Copied existing DEBs from gh-pages debian/ directory."
 else
   mkdir -p repo/pool/main/m/mdllama
 fi
