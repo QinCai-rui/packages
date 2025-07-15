@@ -27,6 +27,9 @@ fi
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
+# Fix pyproject.toml license format
+sed -i 's/license = "GPL-3.0-only"/license = {text = "GPL-3.0-only"}/' pyproject.toml
+
 # 6. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
