@@ -40,10 +40,20 @@ cd ../..
 find mdllama/src -name '*.deb' -exec cp {} . \;
 
 # 6. Prepare APT repo structure
-rm -rf repo
-mkdir -p repo/pool/main/m/mdllama
+# Preserve existing packages from backup if they exist
+if [ -d "repo-backup/repo-$timestamp/pool/main/m/mdllama" ]; then
+  mkdir -p repo/pool/main/m/mdllama
+  cp repo-backup/repo-$timestamp/pool/main/m/mdllama/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
+  echo "Preserved existing packages from previous repo"
+else
+  mkdir -p repo/pool/main/m/mdllama
+fi
 mkdir -p repo/dists/stable/main/binary-all
+
+# Add the new .deb packages
 cp ./*.deb repo/pool/main/m/mdllama/
+echo "Added new packages to repo:"
+ls -la repo/pool/main/m/mdllama/
 
 cd repo
 dpkg-scanpackages pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz

@@ -57,8 +57,19 @@ fpm -s dir -t rpm \
 
 # 7. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
-mkdir -p rpm-out
+# Preserve existing packages from backup if they exist
+if [ -d "rpm-out-backup/rpm-out-$timestamp" ]; then
+  mkdir -p rpm-out
+  cp rpm-out-backup/rpm-out-$timestamp/*.rpm rpm-out/ 2>/dev/null || true
+  echo "Preserved existing RPM packages from previous repo"
+else
+  mkdir -p rpm-out
+fi
+
+# Add the new .rpm packages
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
+echo "Added new RPM packages to repo:"
+ls -la rpm-out/
 
 # 8. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
