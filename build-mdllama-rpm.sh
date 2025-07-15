@@ -15,11 +15,19 @@ python3 -m pip install --upgrade pip wheel
 # 3. Install ollama from PyPI (not available as a system package)
 python3 -m pip install --user ollama
 
-# 4. Clone mdllama source
+# 4. Preserve previous built packages
+timestamp=$(date +%Y%m%d-%H%M%S)
+if [ -d rpm-out ]; then
+  mkdir -p rpm-out-backup
+  mv rpm-out rpm-out-backup/rpm-out-$timestamp
+  echo "Previous packages backed up to rpm-out-backup/rpm-out-$timestamp"
+fi
+
+# 5. Clone mdllama source
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
-# 5. Build RPM package with wheel+pip+fpm (fixes entry point)
+# 6. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
 rm -rf pkgroot
@@ -44,19 +52,19 @@ fpm -s dir -t rpm \
     --url "https://github.com/QinCai-rui/mdllama" \
     -C pkgroot .
 
-# 6. Move the generated .rpm to rpm-out directory for artifact upload
+# 7. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 mkdir -p rpm-out
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 
-# 7. Generate YUM repo metadata
+# 8. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c rpm-out/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
 
-# 8. Clean up
+# 9. Clean up
 rm -rf mdllama
 sudo pip uninstall mdllama -y
 

@@ -5,10 +5,25 @@ set -e
 sudo apt-get update
 sudo apt-get install -y python3-pip devscripts debhelper dpkg-dev fakeroot python3-stdeb python3-all python3-requests python3-rich dh-python python3-colorama
 
-# 2. Clone mdllama source
+# 2. Preserve previous built packages
+timestamp=$(date +%Y%m%d-%H%M%S)
+if [ -d repo ]; then
+  mkdir -p repo-backup
+  mv repo repo-backup/repo-$timestamp
+  echo "Previous repo backed up to repo-backup/repo-$timestamp"
+fi
+
+# Backup any existing .deb files
+if ls *.deb 1> /dev/null 2>&1; then
+  mkdir -p deb-backup
+  mv *.deb deb-backup/
+  echo "Previous .deb files backed up to deb-backup/"
+fi
+
+# 3. Clone mdllama source
 git clone https://github.com/QinCai-rui/mdllama.git
 
-# 3. Build .deb package with stdeb
+# 4. Build .deb package with stdeb
 cd mdllama/src
 cat > stdeb.cfg <<EOF
 [stdeb]
@@ -21,10 +36,10 @@ EOF
 python3 setup.py --command-packages=stdeb.command bdist_deb
 cd ../..
 
-# 4. Move the generated .deb to workspace root
+# 5. Move the generated .deb to workspace root
 find mdllama/src -name '*.deb' -exec cp {} . \;
 
-# 5. Prepare APT repo structure
+# 6. Prepare APT repo structure
 rm -rf repo
 mkdir -p repo/pool/main/m/mdllama
 mkdir -p repo/dists/stable/main/binary-all
