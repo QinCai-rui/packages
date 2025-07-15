@@ -15,22 +15,14 @@ python3 -m pip install --upgrade pip wheel
 # 3. Install ollama from PyPI (not available as a system package)
 python3 -m pip install --user ollama
 
-# 4. Preserve previous built packages
-timestamp=$(date +%Y%m%d-%H%M%S)
-if [ -d rpm-out ]; then
-  mkdir -p rpm-out-backup
-  mv rpm-out rpm-out-backup/rpm-out-$timestamp
-  echo "Previous packages backed up to rpm-out-backup/rpm-out-$timestamp"
-fi
-
-# 5. Clone mdllama source
+# 4. Clone mdllama source
 git clone https://github.com/QinCai-rui/mdllama.git
 cd mdllama/src
 
 # Fix pyproject.toml license format
 sed -i 's/license = "GPL-3.0-only"/license = {text = "GPL-3.0-only"}/' pyproject.toml
 
-# 6. Build RPM package with wheel+pip+fpm (fixes entry point)
+# 5. Build RPM package with wheel+pip+fpm (fixes entry point)
 # Get version from setup.py
 tool_version=$(python3 setup.py --version)
 rm -rf pkgroot
@@ -55,14 +47,14 @@ fpm -s dir -t rpm \
     --url "https://github.com/QinCai-rui/mdllama" \
     -C pkgroot .
 
-# 7. Move the generated .rpm to rpm-out directory for artifact upload
+# 6. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 
-# Restore all previously published RPMs from gh-pages (if available)
-if [ -d ../fedora ]; then
+# Restore all previously published RPMs from gh-pages clone (if available)
+if [ -d oldrepo/fedora ]; then
   mkdir -p rpm-out
-  cp ../fedora/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages fedora/ directory."
+  cp oldrepo/fedora/*.rpm rpm-out/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora directory."
 else
   mkdir -p rpm-out
 fi
@@ -72,14 +64,14 @@ find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 echo "All RPM packages in repo (old + new):"
 ls -la rpm-out/
 
-# 8. Generate YUM repo metadata
+# 7. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c rpm-out/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
 
-# 9. Clean up
+# 8. Clean up
 rm -rf mdllama
 sudo pip uninstall mdllama -y
 

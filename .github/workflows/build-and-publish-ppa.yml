@@ -16,16 +16,13 @@ permissions:
 jobs:
   build-deb:
     runs-on: Debian
-    outputs:
-      deb-artifact: ${{ steps.upload-deb.outputs.artifact-path }}
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Download existing debian repo from gh-pages
+      - name: Clone gh-pages branch for old packages
         run: |
-          git fetch origin gh-pages
-          git checkout origin/gh-pages -- debian || true
+          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
 
       - name: Run build-mdllama-deb.sh
         run: |
@@ -41,16 +38,13 @@ jobs:
 
   build-rpm:
     runs-on: Fedora
-    outputs:
-      rpm-artifact: ${{ steps.upload-rpm.outputs.artifact-path }}
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Download existing fedora repo from gh-pages
+      - name: Clone gh-pages branch for old packages
         run: |
-          git fetch origin gh-pages
-          git checkout origin/gh-pages -- fedora || true
+          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
 
       - name: Run build-mdllama-rpm.sh
         run: |
