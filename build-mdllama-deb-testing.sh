@@ -42,7 +42,7 @@ ls -la repo/pool/main/m/mdllama/
 # Remove duplicate .deb files in pool (keep all unique versions)
 cd repo/pool/main/m/mdllama
 ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
-cd ../../../..
+cd -
 
 cd repo
 # Use -m to include all versions in Packages file
