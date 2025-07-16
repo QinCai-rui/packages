@@ -14,11 +14,34 @@ permissions:
   contents: write
 
 jobs:
+  clean-testing-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          persist-credentials: true
+
+      - name: Remove debian-testing and fedora-testing
+        run: |
+          rm -rf debian-testing fedora-testing
+
+      - name: Commit and push removals
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: clean debian-testing and fedora-testing before build"
+
   build-deb-testing:
+    needs: clean-testing-repos
     runs-on: Debian
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
+
+      - name: Clean up old packages before build
+        run: |
+          rm -rf repo/
 
       - name: Run build-mdllama-deb-testing.sh
         run: |
@@ -33,10 +56,15 @@ jobs:
           path: repo/**
 
   build-rpm-testing:
+    needs: clean-testing-repos
     runs-on: Fedora
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
+
+      - name: Clean up old packages before build
+        run: |
+          rm -rf rpm-out/
 
       - name: Run build-mdllama-rpm-testing.sh
         run: |
@@ -83,7 +111,6 @@ jobs:
           name: fedora-rpm-testing
           path: fedora-testing/
 
-
       - name: Remove all files in testing pools before merge
         run: |
           rm -rf debian-testing/* fedora-testing/*
@@ -91,7 +118,7 @@ jobs:
       - name: Merge with existing gh-pages content
         run: |
           # Clone existing gh-pages branch
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
+          git clone --branch gh-pages --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
           # Use rsync to merge existing content with new content
           if [ -d "existing-gh-pages" ]; then
@@ -100,7 +127,6 @@ jobs:
           
           # Remove the cloned directory so it doesn't get deployed
           rm -rf existing-gh-pages
-
 
       - name: List all published packages (testing)
         run: |
