@@ -24,6 +24,10 @@ cd ../..
 find mdllama/src -name '*.deb' -exec cp {} . \;
 
 # 5. Prepare APT repo structure
+
+# Ensure top-level repo directory always exists first
+mkdir -p repo
+
 # Restore all previously published DEBs from gh-pages clone (if available)
 if [ -d oldrepo/debian/pool/main/m/mdllama ]; then
   mkdir -p repo/pool/main/m/mdllama
@@ -32,6 +36,8 @@ if [ -d oldrepo/debian/pool/main/m/mdllama ]; then
 else
   mkdir -p repo/pool/main/m/mdllama
 fi
+
+# Ensure repo subdirectories exist
 mkdir -p repo/dists/stable/main/binary-all
 
 # Add the new .deb packages
@@ -39,12 +45,12 @@ cp ./*.deb repo/pool/main/m/mdllama/
 echo "Added new packages to repo:"
 ls -la repo/pool/main/m/mdllama/
 
-
 # Remove duplicate .deb files in pool (keep all unique versions)
 cd repo/pool/main/m/mdllama
 ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
 cd ../../../..
 
+# Move into repo directory (already ensured to exist above)
 cd repo
 # Use -m to include all versions in Packages file
 dpkg-scanpackages -m pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
