@@ -38,6 +38,7 @@ fi
 mkdir -p repo/dists/testing/main/binary-all
 
 # Add the new .deb packages
+cp ./*.deb repo/pool/main/m/mdllama/
 echo "Added new packages to repo:"
 ls -la repo/pool/main/m/mdllama/
 
