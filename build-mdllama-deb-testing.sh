@@ -27,18 +27,7 @@ find mdllama/src -name '*.deb' -exec cp {} . \;
 OLD_STABLE_DEB_DIR="oldrepo/debian/pool/main/m/mdllama"
 OLD_TESTING_DEB_DIR="oldrepo/debian-testing/pool/main/m/mdllama"
 mkdir -p repo/pool/main/m/mdllama
-if [ -d "$OLD_STABLE_DEB_DIR" ]; then
-  cp $OLD_STABLE_DEB_DIR/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
-  echo "Copied existing DEBs from gh-pages oldrepo/debian pool."
-fi
-if [ -d "$OLD_TESTING_DEB_DIR" ]; then
-  # Only keep the latest package from testing repo
-  latest_testing=$(ls -1t "$OLD_TESTING_DEB_DIR"/*.deb 2>/dev/null | head -1)
-  if [ -n "$latest_testing" ]; then
-    cp "$latest_testing" repo/pool/main/m/mdllama/
-    echo "Copied latest testing DEB from gh-pages oldrepo/debian-testing pool: $(basename "$latest_testing")"
-  fi
-fi
+# Skip copying any old packages - only keep the newest package being built
 mkdir -p repo/dists/testing/main/binary-all
 
 # Add the new .deb packages

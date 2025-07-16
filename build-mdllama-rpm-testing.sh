@@ -47,24 +47,11 @@ cd ../..
 OLD_STABLE_RPM_DIR="oldrepo/fedora"
 OLD_TESTING_RPM_DIR="oldrepo/fedora-testing"
 mkdir -p rpm-out
-if [ -d "$OLD_STABLE_RPM_DIR" ]; then
-  cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora."
-fi
-if [ -d "$OLD_TESTING_RPM_DIR" ]; then
-  # Only keep the latest package from testing repo
-  latest_testing=$(ls -1t "$OLD_TESTING_RPM_DIR"/*.rpm 2>/dev/null | head -1)
-  if [ -n "$latest_testing" ]; then
-    cp "$latest_testing" rpm-out/
-    echo "Copied latest testing RPM from gh-pages oldrepo/fedora-testing: $(basename "$latest_testing")"
-  fi
-fi
+# Skip copying any old packages - only keep the newest package being built
 
-# Remove duplicate RPMs (keep all unique versions)
-find rpm-out/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
 # Add the new .rpm packages
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
-echo "All RPM packages in repo (old + new):"
+echo "All RPM packages in repo (new only):"
 ls -la rpm-out/
 
 # 7. Generate YUM repo metadata
