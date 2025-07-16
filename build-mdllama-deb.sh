@@ -48,7 +48,7 @@ ls -la repo/pool/main/m/mdllama/
 # Remove duplicate .deb files in pool (keep all unique versions)
 cd repo/pool/main/m/mdllama
 ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
-cd "$(dirname "$0")"
+cd -
 
 # Move into repo directory (already ensured to exist above)
 cd repo
