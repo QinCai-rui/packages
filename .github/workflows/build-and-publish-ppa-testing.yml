@@ -96,34 +96,9 @@ jobs:
           # Clone existing gh-pages branch
           git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
-          # Copy existing content that we're not replacing
+          # Use rsync to merge existing content with new content
           if [ -d "existing-gh-pages" ]; then
-            # Copy any existing files/directories that aren't being replaced
-            find existing-gh-pages -maxdepth 1 -type f -exec cp {} . \; 2>/dev/null || true
-            
-            # Copy existing directories that we're not overwriting
-            for dir in existing-gh-pages/*/; do
-              if [ -d "$dir" ]; then
-                dirname=$(basename "$dir")
-                if [ "$dirname" != "debian" ] && [ "$dirname" != "debian-testing" ] && [ "$dirname" != "fedora" ] && [ "$dirname" != "fedora-testing" ]; then
-                  cp -r "$dir" "./$dirname" 2>/dev/null || true
-                fi
-              fi
-            done
-            
-            # Copy existing debian and fedora content that we're not replacing
-            if [ -d "existing-gh-pages/debian" ] && [ ! -d "debian" ]; then
-              cp -r existing-gh-pages/debian ./
-            fi
-            if [ -d "existing-gh-pages/debian-testing" ] && [ ! -d "debian-testing" ]; then
-              cp -r existing-gh-pages/debian-testing ./
-            fi
-            if [ -d "existing-gh-pages/fedora" ] && [ ! -d "fedora" ]; then
-              cp -r existing-gh-pages/fedora ./
-            fi
-            if [ -d "existing-gh-pages/fedora-testing" ] && [ ! -d "fedora-testing" ]; then
-              cp -r existing-gh-pages/fedora-testing ./
-            fi
+            rsync -av existing-gh-pages/ ./ --exclude='.git'
           fi
 
       - name: List all published packages (testing)
