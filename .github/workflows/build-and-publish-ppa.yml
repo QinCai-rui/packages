@@ -21,9 +21,7 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone gh-pages branch for old packages
-        run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+
 
       - name: Clean up old packages before build
         run: |
@@ -47,9 +45,7 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone gh-pages branch for old packages
-        run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+
 
       - name: Clean up old packages before build
         run: |

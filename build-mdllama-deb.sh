@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+
 set -e
+
+# Clean up old repo directory before build
+rm -rf repo/
 
 # 1. Install build dependencies
 sudo apt-get update
@@ -28,14 +32,11 @@ find mdllama/src -name '*.deb' -exec cp {} . \;
 # Ensure top-level repo directory always exists first
 mkdir -p repo
 
-# Restore all previously published DEBs from gh-pages clone (if available)
-if [ -d oldrepo/debian/pool/main/m/mdllama ]; then
-  mkdir -p repo/pool/main/m/mdllama
-  cp oldrepo/debian/pool/main/m/mdllama/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
-  echo "Copied existing DEBs from gh-pages oldrepo/debian directory."
-else
-  mkdir -p repo/pool/main/m/mdllama
-fi
+OLD_STABLE_DEB_DIR="oldrepo/debian/pool/main/m/mdllama"
+
+# Remove all old .deb files from the pool before adding new ones
+mkdir -p repo/pool/main/m/mdllama
+rm -f repo/pool/main/m/mdllama/*.deb
 
 # Ensure repo subdirectories exist
 mkdir -p repo/dists/stable/main/binary-all
@@ -45,10 +46,7 @@ cp ./*.deb repo/pool/main/m/mdllama/
 echo "Added new packages to repo:"
 ls -la repo/pool/main/m/mdllama/
 
-# Remove duplicate .deb files in pool (keep all unique versions)
-cd repo/pool/main/m/mdllama
-ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
-cd -
+# Keep all .deb files (all versions) - no duplicate removal for stable repo
 
 # Move into repo directory (already ensured to exist above)
 cd repo
