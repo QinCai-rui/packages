@@ -10,16 +10,37 @@ git clone --branch testing --single-branch https://github.com/QinCai-rui/mdllama
 
 # 3. Build .deb package with stdeb
 cd mdllama/src
+
+# Create MANIFEST.in to include the man page
+cat > MANIFEST.in <<EOF
+include ../man/mdllama.1
+EOF
+
+# Modify setup.py to include man page data files
+python3 -c "
+import re
+with open('setup.py', 'r') as f:
+    content = f.read()
+
+# Add data_files parameter to setup() call
+if 'data_files' not in content:
+    content = re.sub(
+        r'(setup\s*\([^)]*)',
+        r'\1    data_files=[(\"share/man/man1\", [\"../man/mdllama.1\"])],\n',
+        content,
+        flags=re.DOTALL
+    )
+
+with open('setup.py', 'w') as f:
+    f.write(content)
+"
+
 cat > stdeb.cfg <<EOF
 [stdeb]
 Suite = testing
 Architecture = all
 Depends = python3, python3-requests, python3-rich, python3-colorama
 EOF
-
-# Ensure man page is included in the DEB package
-mkdir -p debian/mdllama/usr/share/man/man1
-cp ../man/mdllama.1 debian/mdllama/usr/share/man/man1/mdllama.1
 
 python3 setup.py --command-packages=stdeb.command bdist_deb
 cd ../..
