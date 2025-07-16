@@ -32,11 +32,11 @@ if [ -d "$OLD_STABLE_DEB_DIR" ]; then
   echo "Copied existing DEBs from gh-pages oldrepo/debian pool."
 fi
 if [ -d "$OLD_TESTING_DEB_DIR" ]; then
-  # Only keep the latest beta version from testing repo
-  latest_beta=$(ls -1t "$OLD_TESTING_DEB_DIR"/*.deb 2>/dev/null | grep -E 'beta|b[0-9]+' | head -1)
-  if [ -n "$latest_beta" ]; then
-    cp "$latest_beta" repo/pool/main/m/mdllama/
-    echo "Copied latest beta DEB from gh-pages oldrepo/debian-testing pool: $(basename "$latest_beta")"
+  # Only keep the latest package from testing repo
+  latest_testing=$(ls -1t "$OLD_TESTING_DEB_DIR"/*.deb 2>/dev/null | head -1)
+  if [ -n "$latest_testing" ]; then
+    cp "$latest_testing" repo/pool/main/m/mdllama/
+    echo "Copied latest testing DEB from gh-pages oldrepo/debian-testing pool: $(basename "$latest_testing")"
   fi
 fi
 mkdir -p repo/dists/testing/main/binary-all
