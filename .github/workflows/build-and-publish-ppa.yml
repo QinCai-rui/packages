@@ -99,20 +99,30 @@ jobs:
           # Copy existing content that we're not replacing
           if [ -d "existing-gh-pages" ]; then
             # Copy any existing files/directories that aren't being replaced
-            cp -r existing-gh-pages/* . 2>/dev/null || true
+            find existing-gh-pages -maxdepth 1 -type f -exec cp {} . \; 2>/dev/null || true
             
-            # Now overwrite with our new content
-            if [ -d "debian/" ]; then
-              cp -r debian/ .
+            # Copy existing directories that we're not overwriting
+            for dir in existing-gh-pages/*/; do
+              if [ -d "$dir" ]; then
+                dirname=$(basename "$dir")
+                if [ "$dirname" != "debian" ] && [ "$dirname" != "debian-testing" ] && [ "$dirname" != "fedora" ] && [ "$dirname" != "fedora-testing" ]; then
+                  cp -r "$dir" "./$dirname" 2>/dev/null || true
+                fi
+              fi
+            done
+            
+            # Copy existing debian and fedora content that we're not replacing
+            if [ -d "existing-gh-pages/debian" ] && [ ! -d "debian" ]; then
+              cp -r existing-gh-pages/debian ./
             fi
-            if [ -d "debian-testing/" ]; then
-              cp -r debian-testing/ .
+            if [ -d "existing-gh-pages/debian-testing" ] && [ ! -d "debian-testing" ]; then
+              cp -r existing-gh-pages/debian-testing ./
             fi
-            if [ -d "fedora/" ]; then
-              cp -r fedora/ .
+            if [ -d "existing-gh-pages/fedora" ] && [ ! -d "fedora" ]; then
+              cp -r existing-gh-pages/fedora ./
             fi
-            if [ -d "fedora-testing/" ]; then
-              cp -r fedora-testing/ .
+            if [ -d "existing-gh-pages/fedora-testing" ] && [ ! -d "fedora-testing" ]; then
+              cp -r existing-gh-pages/fedora-testing ./
             fi
           fi
 
