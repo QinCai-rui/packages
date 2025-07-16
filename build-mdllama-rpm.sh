@@ -34,6 +34,10 @@ rm -rf pkgroot
 # Install the package with the new modular structure
 python3 setup.py install --root "$PWD/pkgroot"
 
+# Include man page in the RPM package
+mkdir -p pkgroot/usr/share/man/man1
+cp ../man/mdllama.1 pkgroot/usr/share/man/man1/mdllama.1
+
 # Create the RPM package
 fpm -s dir -t rpm \
     -n python3-mdllama \

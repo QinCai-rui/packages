@@ -17,6 +17,10 @@ Architecture = all
 Depends = python3, python3-requests, python3-rich, python3-colorama
 EOF
 
+# Ensure man page is included in the DEB package
+mkdir -p debian/mdllama/usr/share/man/man1
+cp ../man/mdllama.1 debian/mdllama/usr/share/man/man1/mdllama.1
+
 python3 setup.py --command-packages=stdeb.command bdist_deb
 cd ../..
 
