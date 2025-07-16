@@ -47,10 +47,7 @@ cp ./*.deb repo/pool/main/m/mdllama/
 echo "Added new packages to repo:"
 ls -la repo/pool/main/m/mdllama/
 
-# Remove duplicate .deb files in pool (keep all unique versions)
-cd repo/pool/main/m/mdllama
-ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
-cd -
+# Keep all .deb files (all versions) - no duplicate removal for stable repo
 
 # Move into repo directory (already ensured to exist above)
 cd repo

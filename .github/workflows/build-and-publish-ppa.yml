@@ -15,26 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  clean-gh-pages-stable:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          persist-credentials: true
-
-      - name: Remove debian and fedora stable repos
-        run: |
-          rm -rf debian fedora
-
-      - name: Commit and push removals
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "ci: clean debian and fedora stable repos before build"
-
   build-deb:
-    needs: clean-gh-pages-stable
     runs-on: Debian
     steps:
       - name: Checkout this repository
@@ -57,7 +38,6 @@ jobs:
           path: repo/**
 
   build-rpm:
-    needs: clean-gh-pages-stable
     runs-on: Fedora
     steps:
       - name: Checkout this repository
