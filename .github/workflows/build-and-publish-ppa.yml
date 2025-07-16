@@ -100,6 +100,9 @@ jobs:
           if [ -d "existing-gh-pages" ]; then
             rsync -av existing-gh-pages/ ./ --exclude='.git'
           fi
+          
+          # Remove the cloned directory so it doesn't get deployed
+          rm -rf existing-gh-pages
 
 
       - name: List all published packages
