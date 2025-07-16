@@ -51,15 +51,10 @@ fpm -s dir -t rpm \
 cd ../..
 
 OLD_STABLE_RPM_DIR="oldrepo/fedora"
-OLD_TESTING_RPM_DIR="oldrepo/fedora-testing"
 mkdir -p rpm-out
 if [ -d "$OLD_STABLE_RPM_DIR" ]; then
   cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
   echo "Copied existing RPMs from gh-pages oldrepo/fedora."
-fi
-if [ -d "$OLD_TESTING_RPM_DIR" ]; then
-  cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora-testing."
 fi
 
 echo "All RPM packages in repo (old + new):"
