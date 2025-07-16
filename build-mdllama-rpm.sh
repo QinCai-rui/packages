@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-
 set -e
-
-# Clean up old rpm-out directory before build
-rm -rf rpm-out/
 
 # 1. Install build dependencies (Fedora/CentOS/RHEL)
 sudo dnf install -y \
@@ -54,16 +50,19 @@ fpm -s dir -t rpm \
 # 6. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 
-OLD_STABLE_RPM_DIR="oldrepo/fedora"
-mkdir -p rpm-out
-if [ -d "$OLD_STABLE_RPM_DIR" ]; then
-  cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora."
+# Restore all previously published RPMs from gh-pages clone (if available)
+if [ -d oldrepo/fedora ]; then
+  mkdir -p rpm-out
+  cp oldrepo/fedora/*.rpm rpm-out/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora directory."
+else
+  mkdir -p rpm-out
 fi
 
 echo "All RPM packages in repo (old + new):"
 
-# Keep all RPM files (all versions) - no duplicate removal for stable repo
+# Remove duplicate RPMs (keep all unique versions)
+find rpm-out/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
 # Add the new .rpm packages
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 echo "All RPM packages in repo (old + new):"
