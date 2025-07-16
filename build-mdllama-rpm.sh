@@ -50,13 +50,11 @@ fpm -s dir -t rpm \
 # 6. Move the generated .rpm to rpm-out directory for artifact upload
 cd ../..
 
-# Restore all previously published RPMs from gh-pages clone (if available)
-if [ -d oldrepo/fedora ]; then
-  mkdir -p rpm-out
-  cp oldrepo/fedora/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora directory."
-else
-  mkdir -p rpm-out
+OLD_FEDORA_RPM_DIR="oldrepo/fedora"
+mkdir -p rpm-out
+if [ -d "$OLD_FEDORA_RPM_DIR" ]; then
+  cp $OLD_FEDORA_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora."
 fi
 
 echo "All RPM packages in repo (old + new):"

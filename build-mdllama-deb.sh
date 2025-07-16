@@ -28,13 +28,11 @@ find mdllama/src -name '*.deb' -exec cp {} . \;
 # Ensure top-level repo directory always exists first
 mkdir -p repo
 
-# Restore all previously published DEBs from gh-pages clone (if available)
-if [ -d oldrepo/debian/pool/main/m/mdllama ]; then
-  mkdir -p repo/pool/main/m/mdllama
-  cp oldrepo/debian/pool/main/m/mdllama/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
-  echo "Copied existing DEBs from gh-pages oldrepo/debian directory."
-else
-  mkdir -p repo/pool/main/m/mdllama
+OLD_POOL_DEB_DIR="oldrepo/debian/pool/main/m/mdllama"
+mkdir -p repo/pool/main/m/mdllama
+if [ -d "$OLD_POOL_DEB_DIR" ]; then
+  cp $OLD_POOL_DEB_DIR/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
+  echo "Copied existing DEBs from gh-pages oldrepo/debian pool."
 fi
 
 # Ensure repo subdirectories exist
