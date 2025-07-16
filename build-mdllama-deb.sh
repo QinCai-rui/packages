@@ -39,8 +39,15 @@ cp ./*.deb repo/pool/main/m/mdllama/
 echo "Added new packages to repo:"
 ls -la repo/pool/main/m/mdllama/
 
+
+# Remove duplicate .deb files in pool (keep all unique versions)
+cd repo/pool/main/m/mdllama
+ls | grep -E '\.deb$' | sort | uniq -d | xargs -r rm -v
+cd ../../../..
+
 cd repo
-dpkg-scanpackages pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
+# Use -m to include all versions in Packages file
+dpkg-scanpackages -m pool /dev/null | tee dists/stable/main/binary-all/Packages | gzip -9c > dists/stable/main/binary-all/Packages.gz
 
 # --- Instead of symlinks, COPY binary-all to all common archs for GitHub Pages compatibility ---
 cd dists/stable/main

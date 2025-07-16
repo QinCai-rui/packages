@@ -59,6 +59,10 @@ else
   mkdir -p rpm-out
 fi
 
+echo "All RPM packages in repo (old + new):"
+
+# Remove duplicate RPMs (keep all unique versions)
+find rpm-out/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
 # Add the new .rpm packages
 find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 echo "All RPM packages in repo (old + new):"
