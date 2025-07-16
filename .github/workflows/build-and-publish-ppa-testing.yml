@@ -100,6 +100,23 @@ jobs:
           # Remove the cloned directory so it doesn't get deployed
           rm -rf existing-gh-pages
 
+      - name: Keep only the newest DEB and RPM in testing pools
+        run: |
+          # For DEB
+          debdir=debian-testing/pool/main/m/mdllama
+          if [ -d "$debdir" ]; then
+            cd "$debdir"
+            ls -1t *.deb 2>/dev/null | tail -n +2 | xargs -r rm -v
+            cd -
+          fi
+          # For RPM
+          rpmdir=fedora-testing
+          if [ -d "$rpmdir" ]; then
+            cd "$rpmdir"
+            ls -1t *.rpm 2>/dev/null | tail -n +2 | xargs -r rm -v
+            cd -
+          fi
+
       - name: List all published packages (testing)
         run: |
           echo "DEB packages:" && find debian/ -name '*.deb' 2>/dev/null || echo "No debian packages"
