@@ -69,25 +69,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: debian-repo-testing
-          path: debian-testing/
+          path: debian/
 
       - name: Download fedora rpm artifact (testing)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm-testing
-          path: fedora-testing/
+          path: fedora/
 
       - name: List all published packages (testing)
         run: |
-          echo "DEB packages (testing):" && find debian-testing/ -name '*.deb'
-          echo "RPM packages (testing):" && find fedora-testing/ -name '*.rpm'
+          echo "DEB packages (testing):" && find debian/ -name '*.deb'
+          echo "RPM packages (testing):" && find fedora/ -name '*.rpm'
 
       - name: Clean up extra files before deploy (testing)
         run: |
           rm -f LICENSE
           find . -maxdepth 2 -name '*.sh' -exec rm -f {} +
 
-      - name: Deploy to gh-pages (debian-testing/ and fedora-testing/)
+      - name: Deploy to gh-pages (debian/ and fedora/)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

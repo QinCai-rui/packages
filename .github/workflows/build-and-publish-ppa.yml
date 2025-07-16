@@ -65,16 +65,28 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Download debian repo artifact
+      - name: Download debian repo artifact (stable)
         uses: actions/download-artifact@v4
         with:
           name: debian-repo
           path: debian/
 
-      - name: Download fedora rpm artifact
+      - name: Download debian repo artifact (testing)
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-repo-testing
+          path: debian/
+
+      - name: Download fedora rpm artifact (stable)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm
+          path: fedora/
+
+      - name: Download fedora rpm artifact (testing)
+        uses: actions/download-artifact@v4
+        with:
+          name: fedora-rpm-testing
           path: fedora/
 
       - name: List all published packages
