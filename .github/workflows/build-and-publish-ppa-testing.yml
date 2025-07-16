@@ -20,10 +20,6 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone gh-pages branch for old packages
-        run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
-
       - name: Run build-mdllama-deb-testing.sh
         run: |
           chmod +x ./build-mdllama-deb-testing.sh
@@ -41,10 +37,6 @@ jobs:
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
-
-      - name: Clone gh-pages branch for old packages
-        run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
 
       - name: Run build-mdllama-rpm-testing.sh
         run: |
@@ -90,6 +82,10 @@ jobs:
         with:
           name: fedora-rpm-testing
           path: fedora-testing/
+
+      - name: Clean out old testing packages before merge
+        run: |
+          rm -rf debian-testing/* fedora-testing/*
 
       - name: Merge with existing gh-pages content
         run: |
