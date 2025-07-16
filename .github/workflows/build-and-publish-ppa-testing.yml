@@ -111,10 +111,6 @@ jobs:
           name: fedora-rpm-testing
           path: fedora-testing/
 
-      - name: Remove all files in testing pools before merge
-        run: |
-          rm -rf debian-testing/* fedora-testing/*
-
       - name: Merge with existing gh-pages content
         run: |
           # Clone existing gh-pages branch
