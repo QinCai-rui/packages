@@ -44,13 +44,13 @@ fpm -s dir -t rpm \
 
 cd ../..
 
-# Restore all previously published RPMs from gh-pages clone (if available)
-if [ -d oldrepo/fedora ]; then
-  mkdir -p rpm-out
-  cp oldrepo/fedora/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora directory."
+OLD_TESTING_RPM_DIR="oldrepo/fedora/testing"
+if [ -d "$OLD_TESTING_RPM_DIR" ]; then
+  mkdir -p rpm-out/testing
+  cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora testing directory."
 else
-  mkdir -p rpm-out
+  mkdir -p rpm-out/testing
 fi
 
 # Remove duplicate RPMs (keep all unique versions)
@@ -63,6 +63,29 @@ ls -la rpm-out/
 # 7. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c rpm-out/
+else
+  echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
+fi
+
+# Restore all previously published RPMs from gh-pages clone (if available)
+if [ -d oldrepo/fedora ]; then
+  mkdir -p rpm-out/testing
+  cp oldrepo/fedora/*.rpm rpm-out/testing/ 2>/dev/null || true
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora directory."
+else
+  mkdir -p rpm-out/testing
+fi
+
+# Remove duplicate RPMs (keep all unique versions)
+find rpm-out/testing/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
+# Add the new .rpm packages
+find mdllama/src -name '*.rpm' -exec cp {} rpm-out/testing/ \;
+echo "All RPM packages in repo (old + new):"
+ls -la rpm-out/testing/
+
+# 7. Generate YUM repo metadata
+if command -v createrepo_c >/dev/null 2>&1; then
+  createrepo_c rpm-out/testing/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
