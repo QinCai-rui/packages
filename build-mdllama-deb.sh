@@ -27,11 +27,11 @@ import re
 with open('setup.py', 'r') as f:
     content = f.read()
 
-# Add data_files parameter to setup() call
+# Add data_files parameter to setup() call, not to find_packages()
 if 'data_files' not in content:
     content = re.sub(
-        r'(setup\s*\([^)]*)',
-        r'\1    data_files=[(\"share/man/man1\", [\"../man/mdllama.1\"])],\n',
+        r'(setup\s*\([^)]*)(,\s*\))',
+        r'\1,\n    data_files=[(\"share/man/man1\", [\"../man/mdllama.1\"])]\2',
         content,
         flags=re.DOTALL
     )
