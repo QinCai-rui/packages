@@ -52,8 +52,12 @@ if [ -d "$OLD_STABLE_RPM_DIR" ]; then
   echo "Copied existing RPMs from gh-pages oldrepo/fedora."
 fi
 if [ -d "$OLD_TESTING_RPM_DIR" ]; then
-  cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora-testing."
+  # Only keep the latest beta version from testing repo
+  latest_beta=$(ls -1t "$OLD_TESTING_RPM_DIR"/*.rpm 2>/dev/null | grep -E 'beta|b[0-9]+' | head -1)
+  if [ -n "$latest_beta" ]; then
+    cp "$latest_beta" rpm-out/
+    echo "Copied latest beta RPM from gh-pages oldrepo/fedora-testing: $(basename "$latest_beta")"
+  fi
 fi
 
 # Remove duplicate RPMs (keep all unique versions)
