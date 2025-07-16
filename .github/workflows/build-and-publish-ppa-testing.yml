@@ -1,0 +1,96 @@
+name: Build and Publish mdllama DEB and RPM (testing branch)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (optional)'
+        required: false
+      release_tag:
+        description: 'Release tag (optional)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-deb-testing:
+    runs-on: Debian
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Clone gh-pages branch for old packages
+        run: |
+          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+
+      - name: Run build-mdllama-deb-testing.sh
+        run: |
+          chmod +x ./build-mdllama-deb-testing.sh
+          ./build-mdllama-deb-testing.sh
+
+      - name: Upload debian repo artifact (testing)
+        uses: actions/upload-artifact@v4
+        id: upload-deb-testing
+        with:
+          name: debian-repo-testing
+          path: repo/**
+
+  build-rpm-testing:
+    runs-on: Fedora
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Clone gh-pages branch for old packages
+        run: |
+          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+
+      - name: Run build-mdllama-rpm-testing.sh
+        run: |
+          chmod +x ./build-mdllama-rpm-testing.sh
+          ./build-mdllama-rpm-testing.sh
+
+      - name: Upload fedora rpm artifact (testing)
+        uses: actions/upload-artifact@v4
+        id: upload-rpm-testing
+        with:
+          name: fedora-rpm-testing
+          path: rpm-out/**
+
+  deploy-testing:
+    runs-on: ubuntu-latest
+    needs: [build-deb-testing, build-rpm-testing]
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Download debian repo artifact (testing)
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-repo-testing
+          path: debian-testing/
+
+      - name: Download fedora rpm artifact (testing)
+        uses: actions/download-artifact@v4
+        with:
+          name: fedora-rpm-testing
+          path: fedora-testing/
+
+      - name: List all published packages (testing)
+        run: |
+          echo "DEB packages (testing):" && find debian-testing/ -name '*.deb'
+          echo "RPM packages (testing):" && find fedora-testing/ -name '*.rpm'
+
+      - name: Clean up extra files before deploy (testing)
+        run: |
+          rm -f LICENSE
+          find . -maxdepth 2 -name '*.sh' -exec rm -f {} +
+
+      - name: Deploy to gh-pages (debian-testing/ and fedora-testing/)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          cname: packages.qincai.xyz
