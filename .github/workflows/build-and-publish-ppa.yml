@@ -91,6 +91,31 @@ jobs:
           path: fedora-testing/
         continue-on-error: true
 
+      - name: Merge with existing gh-pages content
+        run: |
+          # Clone existing gh-pages branch
+          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
+          
+          # Copy existing content that we're not replacing
+          if [ -d "existing-gh-pages" ]; then
+            # Copy any existing files/directories that aren't being replaced
+            cp -r existing-gh-pages/* . 2>/dev/null || true
+            
+            # Now overwrite with our new content
+            if [ -d "debian/" ]; then
+              cp -r debian/ .
+            fi
+            if [ -d "debian-testing/" ]; then
+              cp -r debian-testing/ .
+            fi
+            if [ -d "fedora/" ]; then
+              cp -r fedora/ .
+            fi
+            if [ -d "fedora-testing/" ]; then
+              cp -r fedora-testing/ .
+            fi
+          fi
+
 
       - name: List all published packages
         run: |
@@ -110,5 +135,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
           publish_branch: gh-pages
-          force_orphan: false
           cname: packages.qincai.xyz
