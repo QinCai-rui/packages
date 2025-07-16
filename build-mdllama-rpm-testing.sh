@@ -44,16 +44,16 @@ fpm -s dir -t rpm \
 
 cd ../..
 
-OLD_FEDORA_RPM_DIR="oldrepo/fedora"
-OLD_TESTING_RPM_DIR="oldrepo/fedora/testing"
+OLD_STABLE_RPM_DIR="oldrepo/fedora"
+OLD_TESTING_RPM_DIR="oldrepo/fedora-testing"
 mkdir -p rpm-out/testing
-if [ -d "$OLD_FEDORA_RPM_DIR" ]; then
-  cp $OLD_FEDORA_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
+if [ -d "$OLD_STABLE_RPM_DIR" ]; then
+  cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
   echo "Copied existing RPMs from gh-pages oldrepo/fedora."
 fi
 if [ -d "$OLD_TESTING_RPM_DIR" ]; then
   cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
-  echo "Copied existing RPMs from gh-pages oldrepo/fedora testing directory."
+  echo "Copied existing RPMs from gh-pages oldrepo/fedora-testing."
 fi
 
 # Remove duplicate RPMs (keep all unique versions)

@@ -24,16 +24,16 @@ cd ../..
 find mdllama/src -name '*.deb' -exec cp {} . \;
 
 # 5. Prepare APT repo structure
-OLD_POOL_DEB_DIR="oldrepo/debian/pool/main/m/mdllama"
-OLD_TESTING_DEB_DIR="oldrepo/debian/dists/testing/main/binary-all"
+OLD_STABLE_DEB_DIR="oldrepo/debian/pool/main/m/mdllama"
+OLD_TESTING_DEB_DIR="oldrepo/debian-testing/pool/main/m/mdllama"
 mkdir -p repo/pool/main/m/mdllama
-if [ -d "$OLD_POOL_DEB_DIR" ]; then
-  cp $OLD_POOL_DEB_DIR/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
+if [ -d "$OLD_STABLE_DEB_DIR" ]; then
+  cp $OLD_STABLE_DEB_DIR/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
   echo "Copied existing DEBs from gh-pages oldrepo/debian pool."
 fi
 if [ -d "$OLD_TESTING_DEB_DIR" ]; then
   cp $OLD_TESTING_DEB_DIR/*.deb repo/pool/main/m/mdllama/ 2>/dev/null || true
-  echo "Copied existing DEBs from gh-pages oldrepo/debian testing suite."
+  echo "Copied existing DEBs from gh-pages oldrepo/debian-testing pool."
 fi
 mkdir -p repo/dists/testing/main/binary-all
 
