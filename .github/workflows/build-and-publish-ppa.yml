@@ -10,19 +10,39 @@ on:
         description: 'Release tag'
         required: false
 
+
 permissions:
   contents: write
 
 jobs:
+  clean-gh-pages-stable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          persist-credentials: true
+
+      - name: Remove debian and fedora stable repos
+        run: |
+          rm -rf debian fedora
+
+      - name: Commit and push removals
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: clean debian and fedora stable repos before build"
+
   build-deb:
+    needs: clean-gh-pages-stable
     runs-on: Debian
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone gh-pages branch for old packages
+      - name: Clean up old packages before build
         run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+          rm -rf repo/
 
       - name: Run build-mdllama-deb.sh
         run: |
@@ -37,14 +57,15 @@ jobs:
           path: repo/**
 
   build-rpm:
+    needs: clean-gh-pages-stable
     runs-on: Fedora
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Clone gh-pages branch for old packages
+      - name: Clean up old packages before build
         run: |
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git oldrepo
+          rm -rf rpm-out/
 
       - name: Run build-mdllama-rpm.sh
         run: |
@@ -65,31 +86,18 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
+
       - name: Download debian repo artifact (stable)
         uses: actions/download-artifact@v4
         with:
           name: debian-repo
           path: debian/
 
-      - name: Download debian repo artifact (testing)
-        uses: actions/download-artifact@v4
-        with:
-          name: debian-repo-testing
-          path: debian-testing/
-        continue-on-error: true
-
       - name: Download fedora rpm artifact (stable)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm
           path: fedora/
-
-      - name: Download fedora rpm artifact (testing)
-        uses: actions/download-artifact@v4
-        with:
-          name: fedora-rpm-testing
-          path: fedora-testing/
-        continue-on-error: true
 
       - name: Merge with existing gh-pages content
         run: |

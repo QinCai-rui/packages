@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+
 set -e
+
+# Clean up old repo directory before build
+rm -rf repo/
 
 # 1. Install build dependencies
 sudo apt-get update
