@@ -46,26 +46,26 @@ cd ../..
 
 OLD_STABLE_RPM_DIR="oldrepo/fedora"
 OLD_TESTING_RPM_DIR="oldrepo/fedora-testing"
-mkdir -p rpm-out/testing
+mkdir -p rpm-out
 if [ -d "$OLD_STABLE_RPM_DIR" ]; then
-  cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
+  cp $OLD_STABLE_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
   echo "Copied existing RPMs from gh-pages oldrepo/fedora."
 fi
 if [ -d "$OLD_TESTING_RPM_DIR" ]; then
-  cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/testing/ 2>/dev/null || true
+  cp $OLD_TESTING_RPM_DIR/*.rpm rpm-out/ 2>/dev/null || true
   echo "Copied existing RPMs from gh-pages oldrepo/fedora-testing."
 fi
 
 # Remove duplicate RPMs (keep all unique versions)
-find rpm-out/testing/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
+find rpm-out/ -type f -name '*.rpm' | sort | uniq -d | xargs -r rm -v
 # Add the new .rpm packages
-find mdllama/src -name '*.rpm' -exec cp {} rpm-out/testing/ \;
+find mdllama/src -name '*.rpm' -exec cp {} rpm-out/ \;
 echo "All RPM packages in repo (old + new):"
-ls -la rpm-out/testing/
+ls -la rpm-out/
 
 # 7. Generate YUM repo metadata
 if command -v createrepo_c >/dev/null 2>&1; then
-  createrepo_c rpm-out/testing/
+  createrepo_c rpm-out/
 else
   echo "Warning: createrepo_c not found, skipping repo metadata generation. DNF/YUM repo will not work!" >&2
 fi
