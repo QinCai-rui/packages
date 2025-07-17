@@ -37,6 +37,12 @@ if [ -n "$DEB_BUILD_DIR" ]; then
     echo "%:" >> "$DEB_BUILD_DIR/debian/rules"
     echo "\tdh $@" >> "$DEB_BUILD_DIR/debian/rules"
     chmod +x "$DEB_BUILD_DIR/debian/rules"
+
+    # Ensure man page is present in the package build directory
+    mkdir -p "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1"
+    cp ../man/mdllama.1 "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/"
+    gzip -f "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/mdllama.1"
+
     # Rebuild the package with dh
     cd "$DEB_BUILD_DIR"
     dpkg-buildpackage -rfakeroot -uc -us
