@@ -89,25 +89,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: debian-repo-testing
-          path: repo/
+          path: debian-testing/
 
       - name: Download fedora rpm artifact (testing)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm-testing
-          path: rpm-out/
-
-      - name: Reorganize artifacts to proper locations
-        run: |
-          # Move debian repo to correct location
-          if [ -d "repo" ]; then
-            mv repo debian-testing
-          fi
-          
-          # Move fedora rpm to correct location  
-          if [ -d "rpm-out" ]; then
-            mv rpm-out fedora-testing
-          fi
+          path: fedora-testing/
 
       - name: Merge with existing gh-pages content
         run: |
@@ -129,14 +117,6 @@ jobs:
           echo "RPM packages:" && find fedora/ -name '*.rpm' 2>/dev/null || echo "No fedora packages"
           echo "RPM testing packages:" && find fedora-testing/ -name '*.rpm' 2>/dev/null || echo "No fedora-testing packages"
 
-      - name: Verify package files exist (testing)
-        run: |
-          echo "Checking for actual package files..."
-          ls -la debian/pool/main/m/mdllama/ 2>/dev/null || echo "No debian pool directory"
-          ls -la fedora/*.rpm 2>/dev/null || echo "No fedora RPM files"
-          ls -la debian-testing/pool/main/m/mdllama/ 2>/dev/null || echo "No debian-testing pool directory"
-          ls -la fedora-testing/*.rpm 2>/dev/null || echo "No fedora-testing RPM files"
-
       - name: Clean up extra files before deploy (testing)
         run: |
           rm -f LICENSE
@@ -149,4 +129,3 @@ jobs:
           publish_dir: ./
           publish_branch: gh-pages
           cname: packages.qincai.xyz
-          force_orphan: true
