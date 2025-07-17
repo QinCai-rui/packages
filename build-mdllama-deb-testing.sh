@@ -26,7 +26,22 @@ mkdir -p "mdllama/src/debian"
 echo "../man/mdllama.1" > "$MANPAGE_LIST_FILE"
 
 # Build .deb package with stdeb (dh will pick up the manpages file)
+
+# Build .deb package with stdeb
 python3 setup.py --command-packages=stdeb.command bdist_deb
+
+# Overwrite debian/rules to ensure dh is used (so dh_installman is called)
+DEB_BUILD_DIR=$(find mdllama/src -type d -name "python3-mdllama-*" | head -1)
+if [ -n "$DEB_BUILD_DIR" ]; then
+    echo "#!/usr/bin/make -f" > "$DEB_BUILD_DIR/debian/rules"
+    echo "%:" >> "$DEB_BUILD_DIR/debian/rules"
+    echo "\tdh $@" >> "$DEB_BUILD_DIR/debian/rules"
+    chmod +x "$DEB_BUILD_DIR/debian/rules"
+    # Rebuild the package with dh
+    cd "$DEB_BUILD_DIR"
+    dpkg-buildpackage -rfakeroot -uc -us
+    cd ../..
+fi
 
 cd ../..
 
