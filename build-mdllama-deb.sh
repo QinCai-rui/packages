@@ -77,10 +77,10 @@ dpkg-deb --build "$INSTALL_DIR" "${PACKAGE_NAME}_${VERSION}_all.deb"
 # Clean up
 rm -rf "$INSTALL_DIR"
 
-cd ../..
-
 # 4. Move the generated .deb to workspace root
 cp python3-mdllama_*.deb ../..
+
+cd ../..
 
 # 5. Prepare APT repo structure
 
