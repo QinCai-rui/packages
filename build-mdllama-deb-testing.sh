@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Clean up old repo directory before build
-rm -rf repo/
-
 # 1. Install build dependencies
 sudo apt-get update
 sudo apt-get install -y python3-pip devscripts debhelper dpkg-dev fakeroot python3-stdeb python3-all python3-requests python3-rich dh-python python3-colorama
