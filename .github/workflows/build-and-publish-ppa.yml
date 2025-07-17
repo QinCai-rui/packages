@@ -89,13 +89,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: debian-repo
-          path: debian/
+          path: repo/
 
       - name: Download fedora rpm artifact (stable)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm
-          path: fedora/
+          path: rpm-out/
+
+      - name: Reorganize artifacts to proper locations
+        run: |
+          # Move debian repo to correct location
+          if [ -d "repo" ]; then
+            mv repo debian
+          fi
+          
+          # Move fedora rpm to correct location  
+          if [ -d "rpm-out" ]; then
+            mv rpm-out fedora
+          fi
 
       - name: Merge with existing gh-pages content
         run: |

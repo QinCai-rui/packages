@@ -89,13 +89,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: debian-repo-testing
-          path: debian-testing/
+          path: repo/
 
       - name: Download fedora rpm artifact (testing)
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm-testing
-          path: fedora-testing/
+          path: rpm-out/
+
+      - name: Reorganize artifacts to proper locations
+        run: |
+          # Move debian repo to correct location
+          if [ -d "repo" ]; then
+            mv repo debian-testing
+          fi
+          
+          # Move fedora rpm to correct location  
+          if [ -d "rpm-out" ]; then
+            mv rpm-out fedora-testing
+          fi
 
       - name: Merge with existing gh-pages content
         run: |
