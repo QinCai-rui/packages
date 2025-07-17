@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Clean up old rpm-out directory before build
-rm -rf rpm-out/
-
 # 1. Install build dependencies (Fedora/CentOS/RHEL)
 sudo dnf install -y \
   python3 python3-pip python3-wheel python3-setuptools \
