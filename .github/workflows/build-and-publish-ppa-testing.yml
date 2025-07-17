@@ -85,25 +85,11 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-      - name: Download debian repo artifact (stable)
-        uses: actions/download-artifact@v4
-        with:
-          name: debian-repo
-          path: debian/
-        continue-on-error: true
-
       - name: Download debian repo artifact (testing)
         uses: actions/download-artifact@v4
         with:
           name: debian-repo-testing
           path: debian-testing/
-
-      - name: Download fedora rpm artifact (stable)
-        uses: actions/download-artifact@v4
-        with:
-          name: fedora-rpm
-          path: fedora/
-        continue-on-error: true
 
       - name: Download fedora rpm artifact (testing)
         uses: actions/download-artifact@v4

@@ -100,7 +100,7 @@ jobs:
       - name: Merge with existing gh-pages content
         run: |
           # Clone existing gh-pages branch
-          git clone --branch gh-pages --single-branch https://github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
+          git clone --branch gh-pages --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
           # Use rsync to merge existing content with new content
           if [ -d "existing-gh-pages" ]; then
