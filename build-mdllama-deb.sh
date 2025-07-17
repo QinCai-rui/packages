@@ -23,7 +23,7 @@ cat > stdeb.cfg <<EOF
 [stdeb]
 Suite = stable
 Architecture = all
-Depends = python3, python3-requests, python3-rich, python3-colorama
+Depends = python3, python3-requests, python3-rich, python3-colorama, python3-ollama
 EOF
 
 # Create a proper debian package structure manually
