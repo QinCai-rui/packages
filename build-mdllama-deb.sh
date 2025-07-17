@@ -16,30 +16,6 @@ git clone https://github.com/QinCai-rui/mdllama.git
 # 3. Build .deb package with stdeb
 cd mdllama/src
 
-# Create MANIFEST.in to include the man page
-cat > MANIFEST.in <<EOF
-include ../man/mdllama.1
-EOF
-
-# Modify setup.py to include man page data files
-python3 -c "
-import re
-with open('setup.py', 'r') as f:
-    content = f.read()
-
-# Add data_files parameter to setup() call, not to find_packages()
-if 'data_files' not in content:
-    content = re.sub(
-        r'(setup\s*\([^)]*)(,\s*\))',
-        r'\1,\n    data_files=[(\"share/man/man1\", [\"../man/mdllama.1\"])]\2',
-        content,
-        flags=re.DOTALL
-    )
-
-with open('setup.py', 'w') as f:
-    f.write(content)
-"
-
 cat > stdeb.cfg <<EOF
 [stdeb]
 Suite = stable
@@ -48,6 +24,21 @@ Depends = python3, python3-requests, python3-rich, python3-colorama
 EOF
 
 python3 setup.py --command-packages=stdeb.command bdist_deb
+
+# After building, manually add the man page to the generated deb structure
+DEB_BUILD_DIR=$(find . -type d -name "python3-mdllama-*" | head -1)
+if [ -n "$DEB_BUILD_DIR" ]; then
+    echo "Found DEB build directory: $DEB_BUILD_DIR"
+    mkdir -p "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1"
+    cp ../man/mdllama.1 "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/"
+    gzip "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/mdllama.1"
+    
+    # Rebuild the package with the man page included
+    cd "$DEB_BUILD_DIR"
+    dpkg-buildpackage -rfakeroot -uc -us
+    cd ..
+fi
+
 cd ../..
 
 # 4. Move the generated .deb to workspace root
