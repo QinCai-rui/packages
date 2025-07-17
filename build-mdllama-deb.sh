@@ -16,6 +16,9 @@ git clone https://github.com/QinCai-rui/mdllama.git
 # 3. Build .deb package with stdeb
 cd mdllama/src
 
+# Fix the pyproject.toml license format issue
+sed -i 's/license = "GPL-3.0-only"/license = {text = "GPL-3.0-only"}/' pyproject.toml
+
 cat > stdeb.cfg <<EOF
 [stdeb]
 Suite = stable
@@ -23,40 +26,61 @@ Architecture = all
 Depends = python3, python3-requests, python3-rich, python3-colorama
 EOF
 
+# Create a proper debian package structure manually
+PACKAGE_NAME="python3-mdllama"
+VERSION=$(grep version pyproject.toml | cut -d'"' -f2)
+INSTALL_DIR="deb-build"
 
-# Debhelper best practice: use dh_installman via debian/python3-mdllama.manpages
-# Create the manpages file for dh_installman
-MANPAGE_LIST_FILE="mdllama/src/debian/python3-mdllama.manpages"
-mkdir -p "mdllama/src/debian"
-echo "../man/mdllama.1" > "$MANPAGE_LIST_FILE"
+# Create debian package structure
+mkdir -p "$INSTALL_DIR/DEBIAN"
+mkdir -p "$INSTALL_DIR/usr/lib/python3/dist-packages"
+mkdir -p "$INSTALL_DIR/usr/bin"
+mkdir -p "$INSTALL_DIR/usr/share/man/man1"
 
+# Build the Python package
+python3 setup.py build
 
-# Build .deb package with stdeb
-python3 setup.py --command-packages=stdeb.command bdist_deb
+# Copy the built package
+cp -r build/lib/mdllama "$INSTALL_DIR/usr/lib/python3/dist-packages/"
 
-# Overwrite debian/rules to ensure dh is used (so dh_installman is called)
-DEB_BUILD_DIR=$(find mdllama/src -type d -name "python3-mdllama-*" | head -1)
-if [ -n "$DEB_BUILD_DIR" ]; then
-    echo "#!/usr/bin/make -f" > "$DEB_BUILD_DIR/debian/rules"
-    echo "%:" >> "$DEB_BUILD_DIR/debian/rules"
-    echo "\tdh $@" >> "$DEB_BUILD_DIR/debian/rules"
-    chmod +x "$DEB_BUILD_DIR/debian/rules"
+# Create the executable script
+cat > "$INSTALL_DIR/usr/bin/mdllama" << 'EOF'
+#!/usr/bin/env python3
+from mdllama.main import main
+if __name__ == "__main__":
+    main()
+EOF
+chmod +x "$INSTALL_DIR/usr/bin/mdllama"
 
-    # Ensure man page is present in the package build directory
-    mkdir -p "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1"
-    cp ../man/mdllama.1 "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/"
-    gzip -f "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/mdllama.1"
+# Copy and compress the man page
+cp ../man/mdllama.1 "$INSTALL_DIR/usr/share/man/man1/"
+gzip -f "$INSTALL_DIR/usr/share/man/man1/mdllama.1"
 
-    # Rebuild the package with dh
-    cd "$DEB_BUILD_DIR"
-    dpkg-buildpackage -rfakeroot -uc -us
-    cd ../..
-fi
+# Create the control file
+cat > "$INSTALL_DIR/DEBIAN/control" << EOF
+Package: $PACKAGE_NAME
+Version: $VERSION
+Section: python
+Priority: optional
+Architecture: all
+Depends: python3, python3-requests, python3-rich, python3-colorama
+Maintainer: QinCai-rui <140027854+QinCai-rui@users.noreply.github.com>
+Description: A command-line interface for LLMs (Ollama, OpenAI-compatible)
+ mdllama is a CLI tool for interacting with large language models (LLMs)
+ via Ollama and OpenAI-compatible endpoints. It supports chat completions,
+ interactive chat, model management, session history, and more.
+EOF
+
+# Build the deb package
+dpkg-deb --build "$INSTALL_DIR" "${PACKAGE_NAME}_${VERSION}_all.deb"
+
+# Clean up
+rm -rf "$INSTALL_DIR"
 
 cd ../..
 
 # 4. Move the generated .deb to workspace root
-find mdllama/src -name '*.deb' -exec cp {} . \;
+cp python3-mdllama_*.deb ../..
 
 # 5. Prepare APT repo structure
 
