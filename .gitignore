@@ -1,8 +1,0 @@
-# Build artifacts
-*.deb
-*.rpm
-repo/
-mdllama/
-stable_test/
-temp_mdllama/
-deb-build/
