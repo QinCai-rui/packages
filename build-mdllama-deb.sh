@@ -23,21 +23,15 @@ Architecture = all
 Depends = python3, python3-requests, python3-rich, python3-colorama
 EOF
 
-python3 setup.py --command-packages=stdeb.command bdist_deb
 
-# After building, manually add the man page to the generated deb structure
-DEB_BUILD_DIR=$(find . -type d -name "python3-mdllama-*" | head -1)
-if [ -n "$DEB_BUILD_DIR" ]; then
-    echo "Found DEB build directory: $DEB_BUILD_DIR"
-    mkdir -p "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1"
-    cp ../man/mdllama.1 "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/"
-    gzip "$DEB_BUILD_DIR/debian/python3-mdllama/usr/share/man/man1/mdllama.1"
-    
-    # Rebuild the package with the man page included
-    cd "$DEB_BUILD_DIR"
-    dpkg-buildpackage -rfakeroot -uc -us
-    cd ..
-fi
+# Debhelper best practice: use dh_installman via debian/python3-mdllama.manpages
+# Create the manpages file for dh_installman
+MANPAGE_LIST_FILE="mdllama/src/debian/python3-mdllama.manpages"
+mkdir -p "mdllama/src/debian"
+echo "../man/mdllama.1" > "$MANPAGE_LIST_FILE"
+
+# Build .deb package with stdeb (dh will pick up the manpages file)
+python3 setup.py --command-packages=stdeb.command bdist_deb
 
 cd ../..
 
