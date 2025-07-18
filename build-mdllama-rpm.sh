@@ -38,7 +38,16 @@ python3 setup.py install --root "$PWD/pkgroot"
 mkdir -p pkgroot/usr/share/man/man1
 cp ../man/mdllama.1 pkgroot/usr/share/man/man1/mdllama.1
 
-# Create the RPM package
+# Create post-install script for RPM
+cat > postinstall.sh <<'EOF'
+#!/bin/bash
+set -e
+dnf install -y python3-pip
+pip install --user ollama
+EOF
+chmod +x postinstall.sh
+
+# Create the RPM package with post-install script
 fpm -s dir -t rpm \
     -n python3-mdllama \
     -v "$tool_version" \
@@ -53,6 +62,7 @@ fpm -s dir -t rpm \
     --description "A command-line interface for Ollama and OpenAI-compatible API" \
     --maintainer "Raymont Qin <hello@qincai.xyz>" \
     --url "https://github.com/QinCai-rui/mdllama" \
+    --after-install postinstall.sh \
     -C pkgroot .
 
 # 6. Move the generated .rpm to rpm-out directory for artifact upload
