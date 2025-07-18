@@ -18,7 +18,7 @@ cat > stdeb.cfg <<EOF
 [stdeb]
 Suite = testing
 Architecture = all
-Depends = python3, python3-requests, python3-rich, python3-colorama
+Depends = python3, python3-requests, python3-rich, python3-colorama, python3-ollama
 EOF
 
 
@@ -60,7 +60,7 @@ Section: python
 Priority: optional
 Architecture: all
 Depends: python3, python3-requests, python3-rich, python3-colorama, python3-ollama
-Maintainer: QinCai-rui <140027854+QinCai-rui@users.noreply.github.com>
+Maintainer: Raymont Qin <raymontqin_rui@outlook.com>
 Description: A command-line interface for LLMs (Ollama, OpenAI-compatible)
  mdllama is a CLI tool for interacting with large language models (LLMs)
  via Ollama and OpenAI-compatible endpoints. It supports chat completions,
