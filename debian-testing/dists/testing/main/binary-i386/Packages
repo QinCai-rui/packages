@@ -1,0 +1,17 @@
+Package: python3-mdllama
+Version: 20250725.2
+Architecture: all
+Maintainer: Raymont Qin <raymontqin_rui@outlook.com>
+Depends: python3, python3-requests, python3-rich, python3-colorama, python3-ollama
+Filename: pool/main/m/mdllama/python3-mdllama_20250725.2_all.deb
+Size: 20820
+MD5sum: 0163eddac84657842b3fbaf6f35c6ab9
+SHA1: ca9325cbb898cf1b272febb7a40026e4abd8be09
+SHA256: 76f805fe05038fcdf3fe71063561b2b36bb8459a232d37897cf8398ea746d60e
+Section: python
+Priority: optional
+Description: A command-line interface for LLMs (Ollama, OpenAI-compatible)
+ mdllama is a CLI tool for interacting with large language models (LLMs)
+ via Ollama and OpenAI-compatible endpoints. It supports chat completions,
+ interactive chat, model management, session history, and more.
+
