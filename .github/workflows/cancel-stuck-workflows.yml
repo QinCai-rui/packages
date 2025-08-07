@@ -1,6 +1,7 @@
 name: Cancel Stuck Queued Workflows
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '*/10 * * * *' # every 10 minutes
 
