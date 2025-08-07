@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '*/10 * * * *' # every 10 minutes
 
+permissions:
+  actions: write
+
 jobs:
   cancel-stuck:
     runs-on: ubuntu-latest
