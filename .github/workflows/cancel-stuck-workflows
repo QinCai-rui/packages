@@ -1,0 +1,34 @@
+name: Cancel Stuck Queued Workflows
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes
+
+jobs:
+  cancel-stuck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up gh CLI
+        uses: actions/setup-gh@v4
+
+      - name: Cancel stuck queued workflow runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          # Get all queued runs
+          gh api -H "Accept: application/vnd.github+json" \
+            "/repos/$REPO/actions/runs?status=queued&per_page=100" \
+            | jq -c '.workflow_runs[]' | while read -r run; do
+              id=$(echo "$run" | jq -r '.id')
+              created_at=$(echo "$run" | jq -r '.created_at')
+              # Convert created_at to seconds since epoch
+              created_sec=$(date -d "$created_at" +%s)
+              now_sec=$(date +%s)
+              age=$((now_sec - created_sec))
+              # If queued for more than 600 seconds (10 minutes), cancel
+              if [ "$age" -gt 600 ]; then
+                echo "Cancelling stuck run $id (queued for $age seconds)"
+                gh api -X POST "/repos/$REPO/actions/runs/$id/cancel"
+              fi
+            done
