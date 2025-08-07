@@ -9,9 +9,6 @@ jobs:
   cancel-stuck:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up gh CLI
-        uses: actions/setup-gh@v4
-
       - name: Cancel stuck queued workflow runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
