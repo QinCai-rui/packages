@@ -35,6 +35,7 @@ jobs:
   build-deb:
     needs: clean-stable-repos
     runs-on: Debian
+    timeout-minutes: 10  # Fails if job doesn't start/finish in 10 minutes
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
@@ -58,6 +59,7 @@ jobs:
   build-rpm:
     needs: clean-stable-repos
     runs-on: Fedora
+    timeout-minutes: 10  # Fails if job doesn't start/finish in 10 minutes
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
