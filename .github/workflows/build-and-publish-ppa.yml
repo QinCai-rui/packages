@@ -28,17 +28,31 @@ jobs:
           rm -rf debian fedora
 
       - name: Commit and push removals
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "ci: clean debian and fedora stable repos before build"
+        name: Create and push 'working' branch with removals (do not modify gh-pages)
+        run: |
+          # Configure git author so commit is attributed
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create a new branch from gh-pages and commit the removals there so gh-pages remains intact
+          git checkout -b working
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "ci: staged clean of debian and fedora on working branch before build"
+            git push --set-upstream origin working || echo "Push failed (maybe permissions); branch created locally"
+          fi
 
   build-deb:
     needs: clean-stable-repos
     runs-on: Debian
     timeout-minutes: 10  # Fails if job doesn't start/finish in 10 minutes
     steps:
-      - name: Checkout this repository
+      - name: Checkout working branch
         uses: actions/checkout@v4
+        with:
+          ref: working
 
       - name: Clean up old packages before build
         run: |
@@ -61,8 +75,10 @@ jobs:
     runs-on: Fedora
     timeout-minutes: 10  # Fails if job doesn't start/finish in 10 minutes
     steps:
-      - name: Checkout this repository
+      - name: Checkout working branch
         uses: actions/checkout@v4
+        with:
+          ref: working
 
       - name: Clean up old packages before build
         run: |
@@ -104,13 +120,27 @@ jobs:
           # Clone existing gh-pages branch
           git clone --branch gh-pages --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
-          # Use rsync to merge existing content with new content
-          if [ -d "existing-gh-pages" ]; then
-            rsync -av existing-gh-pages/ ./ --exclude='.git'
+          # Clone working branch to get the cleaned state
+          git clone --branch working --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git working-branch || echo "No working branch found"
+          
+          # Start with working branch content (which has removals applied)
+          if [ -d "working-branch" ]; then
+            rsync -av working-branch/ ./ --exclude='.git'
           fi
           
-          # Remove the cloned directory so it doesn't get deployed
-          rm -rf existing-gh-pages
+          # Merge back any other directories from gh-pages that weren't removed
+          if [ -d "existing-gh-pages" ]; then
+            # Copy back non-target directories from gh-pages
+            for dir in existing-gh-pages/*/; do
+              dirname=$(basename "$dir")
+              if [ "$dirname" != "debian" ] && [ "$dirname" != "fedora" ]; then
+                rsync -av "$dir" "./"
+              fi
+            done
+          fi
+          
+          # Remove the cloned directories so they don't get deployed
+          rm -rf existing-gh-pages working-branch
 
 
       - name: List all published packages
