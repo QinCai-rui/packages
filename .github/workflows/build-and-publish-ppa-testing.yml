@@ -23,22 +23,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0
 
-      - name: Fetch gh-pages content
-        run: |
-          # Fetch gh-pages branch
-          git fetch origin gh-pages:gh-pages
-
-      - name: Remove debian-testing and fedora-testing
-        run: |
-          # Create a temporary directory for gh-pages content
-          mkdir -p temp-gh-pages
-          git --work-tree=temp-gh-pages checkout gh-pages -- . || echo "No gh-pages content yet"
-          
-          # Remove the target directories from the gh-pages content
-          rm -rf temp-gh-pages/debian-testing temp-gh-pages/fedora-testing
-
-      - name: Create and push 'working' branch with removals (do not modify gh-pages)
+      - name: Create and push 'working' branch with merged content
         id: create-branch
         run: |
           # Configure git author so commit is attributed
@@ -51,9 +38,25 @@ jobs:
           # Create working branch from main (preserving build scripts)
           git checkout -b "$WORKING_BRANCH"
           
-          # Copy the cleaned gh-pages content over (without the removed directories)
-          if [ -d "temp-gh-pages" ]; then
-            rsync -av temp-gh-pages/ ./ --exclude='.git'
+          # Fetch and merge gh-pages content, removing target directories
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            echo "gh-pages branch exists, fetching content..."
+            git fetch origin gh-pages
+            
+            # Create temp directory and extract gh-pages files
+            mkdir -p temp-gh-pages
+            git --work-tree=temp-gh-pages checkout origin/gh-pages -- . 2>/dev/null || echo "No files in gh-pages"
+            
+            # Remove target directories
+            rm -rf temp-gh-pages/debian-testing temp-gh-pages/fedora-testing
+            
+            # Copy remaining gh-pages content to working branch
+            if [ -d "temp-gh-pages" ]; then
+              cp -r temp-gh-pages/* . 2>/dev/null || echo "No files to copy"
+              rm -rf temp-gh-pages
+            fi
+          else
+            echo "No gh-pages branch found, starting fresh"
           fi
           
           git add -A
