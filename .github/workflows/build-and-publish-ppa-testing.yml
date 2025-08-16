@@ -19,23 +19,24 @@ jobs:
     outputs:
       working-branch: ${{ steps.create-branch.outputs.working-branch }}
     steps:
-      - name: Checkout gh-pages branch
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          ref: gh-pages
           persist-credentials: true
-          path: gh-pages-content
 
-      - name: Checkout main branch for source files
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-          path: main-content
+      - name: Fetch gh-pages content
+        run: |
+          # Fetch gh-pages branch
+          git fetch origin gh-pages:gh-pages
 
       - name: Remove debian-testing and fedora-testing
         run: |
-          cd gh-pages-content
-          rm -rf debian-testing fedora-testing
+          # Create a temporary directory for gh-pages content
+          mkdir -p temp-gh-pages
+          git --work-tree=temp-gh-pages checkout gh-pages -- . || echo "No gh-pages content yet"
+          
+          # Remove the target directories from the gh-pages content
+          rm -rf temp-gh-pages/debian-testing temp-gh-pages/fedora-testing
 
       - name: Create and push 'working' branch with removals (do not modify gh-pages)
         id: create-branch
@@ -47,12 +48,13 @@ jobs:
           # Create a unique working branch name to avoid conflicts
           WORKING_BRANCH="working-testing-$(date +%s)-${{ github.run_id }}"
           
-          # Start with main branch content (which has the build scripts)
-          cd main-content
+          # Create working branch from main (preserving build scripts)
           git checkout -b "$WORKING_BRANCH"
           
           # Copy the cleaned gh-pages content over (without the removed directories)
-          rsync -av ../gh-pages-content/ ./ --exclude='.git'
+          if [ -d "temp-gh-pages" ]; then
+            rsync -av temp-gh-pages/ ./ --exclude='.git'
+          fi
           
           git add -A
           if git diff --cached --quiet; then
