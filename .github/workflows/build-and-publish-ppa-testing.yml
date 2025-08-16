@@ -16,6 +16,8 @@ permissions:
 jobs:
   clean-testing-repos:
     runs-on: ubuntu-latest
+    outputs:
+      working-branch: ${{ env.WORKING_BRANCH }}
     steps:
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -27,21 +29,25 @@ jobs:
         run: |
           rm -rf debian-testing fedora-testing
 
-      - name: Commit and push removals
-        name: Create and push 'working' branch with removals (do not modify gh-pages)
+      - name: Create and push 'working' branch with removals (do not modify gh-pages)
         run: |
           # Configure git author so commit is attributed
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Create a unique working branch name to avoid conflicts
+          WORKING_BRANCH="working-testing-$(date +%s)-${{ github.run_id }}"
+          
           # Create a new branch from gh-pages and commit the removals there so gh-pages remains intact
-          git checkout -b working
+          git checkout -b "$WORKING_BRANCH"
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit"
+            echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
           else
             git commit -m "ci: staged clean of debian-testing and fedora-testing on working branch before build"
-            git push --set-upstream origin working || echo "Push failed (maybe permissions); branch created locally"
+            git push --set-upstream origin "$WORKING_BRANCH"
+            echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
           fi
 
   build-deb-testing:
@@ -52,7 +58,7 @@ jobs:
       - name: Checkout working branch
         uses: actions/checkout@v4
         with:
-          ref: working
+          ref: ${{ needs.clean-testing-repos.outputs.working-branch }}
 
       - name: Clean up old packages before build
         run: |
@@ -78,7 +84,7 @@ jobs:
       - name: Checkout working branch
         uses: actions/checkout@v4
         with:
-          ref: working
+          ref: ${{ needs.clean-testing-repos.outputs.working-branch }}
 
       - name: Clean up old packages before build
         run: |
@@ -121,7 +127,10 @@ jobs:
           git clone --branch gh-pages --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
           # Clone working branch to get the cleaned state
-          git clone --branch working --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git working-branch || echo "No working branch found"
+          WORKING_BRANCH="${{ needs.clean-testing-repos.outputs.working-branch }}"
+          if [ -n "$WORKING_BRANCH" ]; then
+            git clone --branch "$WORKING_BRANCH" --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git working-branch || echo "No working branch found"
+          fi
           
           # Start with working branch content (which has removals applied)
           if [ -d "working-branch" ]; then
@@ -161,3 +170,11 @@ jobs:
           publish_dir: ./
           publish_branch: gh-pages
           cname: packages.qincai.xyz
+
+      - name: Clean up temporary working branch
+        if: always()
+        run: |
+          WORKING_BRANCH="${{ needs.clean-testing-repos.outputs.working-branch }}"
+          if [ -n "$WORKING_BRANCH" ]; then
+            git push origin --delete "$WORKING_BRANCH" || echo "Working branch already cleaned up or doesn't exist"
+          fi
