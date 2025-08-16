@@ -1,4 +1,4 @@
-name: Build and Publish mdllama DEB and RPM
+name: Build and Publish mdllama DEB and RPM 
 
 on:
   workflow_dispatch:
