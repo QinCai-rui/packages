@@ -24,9 +24,17 @@ jobs:
         with:
           ref: gh-pages
           persist-credentials: true
+          path: gh-pages-content
+
+      - name: Checkout main branch for source files
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          path: main-content
 
       - name: Remove debian-testing and fedora-testing
         run: |
+          cd gh-pages-content
           rm -rf debian-testing fedora-testing
 
       - name: Create and push 'working' branch with removals (do not modify gh-pages)
@@ -39,13 +47,18 @@ jobs:
           # Create a unique working branch name to avoid conflicts
           WORKING_BRANCH="working-testing-$(date +%s)-${{ github.run_id }}"
           
-          # Create a new branch from gh-pages and commit the removals there so gh-pages remains intact
+          # Start with main branch content (which has the build scripts)
+          cd main-content
           git checkout -b "$WORKING_BRANCH"
+          
+          # Copy the cleaned gh-pages content over (without the removed directories)
+          rsync -av ../gh-pages-content/ ./ --exclude='.git'
+          
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "ci: staged clean of debian-testing and fedora-testing on working branch before build"
+            git commit -m "ci: merge main branch with cleaned gh-pages content"
             git push --set-upstream origin "$WORKING_BRANCH"
           fi
           
