@@ -17,7 +17,7 @@ jobs:
   clean-testing-repos:
     runs-on: ubuntu-latest
     outputs:
-      working-branch: ${{ env.WORKING_BRANCH }}
+      working-branch: ${{ steps.create-branch.outputs.working-branch }}
     steps:
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -30,6 +30,7 @@ jobs:
           rm -rf debian-testing fedora-testing
 
       - name: Create and push 'working' branch with removals (do not modify gh-pages)
+        id: create-branch
         run: |
           # Configure git author so commit is attributed
           git config user.name "github-actions[bot]"
@@ -43,12 +44,13 @@ jobs:
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit"
-            echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
           else
             git commit -m "ci: staged clean of debian-testing and fedora-testing on working branch before build"
             git push --set-upstream origin "$WORKING_BRANCH"
-            echo "WORKING_BRANCH=$WORKING_BRANCH" >> $GITHUB_ENV
           fi
+          
+          # Set the output for other jobs to use
+          echo "working-branch=$WORKING_BRANCH" >> $GITHUB_OUTPUT
 
   build-deb-testing:
     needs: clean-testing-repos
