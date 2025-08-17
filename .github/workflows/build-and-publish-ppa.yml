@@ -1,4 +1,4 @@
-name: Build and Publish mdllama DEB and RPM 
+name: Build and Publish mdllama DEB and RPM
 
 on:
   workflow_dispatch:
@@ -128,7 +128,6 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-
       - name: Download debian repo artifact (stable)
         uses: actions/download-artifact@v4
         with:
@@ -146,31 +145,24 @@ jobs:
           # Clone existing gh-pages branch
           git clone --branch gh-pages --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git existing-gh-pages || echo "No existing gh-pages branch"
           
-          # Clone working branch to get the cleaned state
-          WORKING_BRANCH="${{ needs.clean-stable-repos.outputs.working-branch }}"
-          if [ -n "$WORKING_BRANCH" ]; then
-            git clone --branch "$WORKING_BRANCH" --single-branch https://${{ secrets.GITHUB_TOKEN }}@github.com/QinCai-rui/packages.git working-branch || echo "No working branch found"
-          fi
-          
-          # Start with working branch content (which has removals applied)
-          if [ -d "working-branch" ]; then
-            rsync -av working-branch/ ./ --exclude='.git'
-          fi
-          
-          # Merge back any other directories from gh-pages that weren't removed
+          # Start with existing gh-pages content (excluding removed directories)
           if [ -d "existing-gh-pages" ]; then
             # Copy back non-target directories from gh-pages
-            for dir in existing-gh-pages/*/; do
-              dirname=$(basename "$dir")
-              if [ "$dirname" != "debian" ] && [ "$dirname" != "fedora" ]; then
-                rsync -av "$dir" "./"
+            for item in existing-gh-pages/*; do
+              if [ -d "$item" ]; then
+                dirname=$(basename "$item")
+                if [ "$dirname" != "debian" ] && [ "$dirname" != "fedora" ]; then
+                  cp -r "$item" "./"
+                fi
+              elif [ -f "$item" ]; then
+                # Copy web files like CNAME, .nojekyll, etc.
+                cp "$item" "./"
               fi
             done
           fi
           
-          # Remove the cloned directories so they don't get deployed
-          rm -rf existing-gh-pages working-branch
-
+          # Remove the cloned directory so it doesn't get deployed
+          rm -rf existing-gh-pages
 
       - name: List all published packages
         run: |
@@ -178,11 +170,6 @@ jobs:
           echo "DEB testing packages:" && find debian-testing/ -name '*.deb' 2>/dev/null || echo "No debian-testing packages"
           echo "RPM packages:" && find fedora/ -name '*.rpm' 2>/dev/null || echo "No fedora packages"
           echo "RPM testing packages:" && find fedora-testing/ -name '*.rpm' 2>/dev/null || echo "No fedora-testing packages"
-
-      - name: Clean up extra files before deploy
-        run: |
-          rm -f LICENSE
-          find . -maxdepth 2 -name '*.sh' -exec rm -f {} +
 
       - name: Deploy to gh-pages (debian/, debian-testing/, fedora/, fedora-testing/)
         uses: peaceiris/actions-gh-pages@v4
