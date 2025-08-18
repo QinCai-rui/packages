@@ -1,13 +1,13 @@
 Package: python3-mdllama
-Version: 20250816.2
+Version: 4.2.4
 Architecture: all
 Maintainer: Raymont Qin <raymontqin_rui@outlook.com>
 Depends: python3, python3-requests, python3-rich, python3-colorama, python3-ollama
-Filename: pool/main/m/mdllama/python3-mdllama_20250816.2_all.deb
-Size: 30160
-MD5sum: 51c698515764d835df9c7821f7042c16
-SHA1: 65d8c28a7235f8b79e7b8fadbfda5a6f9058e311
-SHA256: 4214c4f7bfe47c5da13a1fb894f655b98bcf7b8e37521e82b444fcf28c965dbe
+Filename: pool/main/m/mdllama/python3-mdllama_4.2.4_all.deb
+Size: 30152
+MD5sum: 1c9152a56c7e0e775688fbfa5a34b8d0
+SHA1: 127d65c14cf05892a55bfbaab33821d9f96e0fae
+SHA256: 9e3f9e6c4351eebfbe24818bc27ace202b1e4b9f6e63516e84dba5e32b13649c
 Section: python
 Priority: optional
 Description: A command-line interface for LLMs (Ollama, OpenAI-compatible)
